@@ -3,30 +3,30 @@ LRESULT CALLBACK StartUpWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 };
 
 
-// функция-обработчик сообщений, поступающих окну
+// С„СѓРЅРєС†РёСЏ-РѕР±СЂР°Р±РѕС‚С‡РёРє СЃРѕРѕР±С‰РµРЅРёР№, РїРѕСЃС‚СѓРїР°СЋС‰РёС… РѕРєРЅСѓ
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	// структура, содержащая необходимую информацию для рисования в клентской части окна
+	// СЃС‚СЂСѓРєС‚СѓСЂР°, СЃРѕРґРµСЂР¶Р°С‰Р°СЏ РЅРµРѕР±С…РѕРґРёРјСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ РІ РєР»РµРЅС‚СЃРєРѕР№ С‡Р°СЃС‚Рё РѕРєРЅР°
 	PAINTSTRUCT ps;
-	// указатель на дескриптор(или просто дескриптор) Device Context
+	// СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґРµСЃРєСЂРёРїС‚РѕСЂ(РёР»Рё РїСЂРѕСЃС‚Рѕ РґРµСЃРєСЂРёРїС‚РѕСЂ) Device Context
 	HDC hdc;
 
 	switch (message) {
-	// обработка сообщений от мыши или клавиатуры
+	// РѕР±СЂР°Р±РѕС‚РєР° СЃРѕРѕР±С‰РµРЅРёР№ РѕС‚ РјС‹С€Рё РёР»Рё РєР»Р°РІРёР°С‚СѓСЂС‹
 	case(WM_INPUT): {
 		UINT dwSize = sizeof(RAWINPUT);
 		static BYTE lpRawInput[sizeof(RAWINPUT)];
 
 		UINT resData = GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpRawInput, &dwSize, sizeof(RAWINPUTHEADER));
 		DWORD resData2 = ((RAWINPUT*)lpRawInput)->header.dwType;
-		if (resData2 == RIM_TYPEKEYBOARD) { // если сообщение поступило от клавиатуры
+		if (resData2 == RIM_TYPEKEYBOARD) { // РµСЃР»Рё СЃРѕРѕР±С‰РµРЅРёРµ РїРѕСЃС‚СѓРїРёР»Рѕ РѕС‚ РєР»Р°РІРёР°С‚СѓСЂС‹
 			USHORT pressedKey = ((RAWINPUT*)lpRawInput)->data.keyboard.VKey;
 
 			switch (pressedKey) {
 			case(0x57): {// W
-				// можно было бы просто прибавить moveAheadVector к последней строчке view matrix, но эта матрица уже транспонирована, поэтому так сделать не получится 
+				// РјРѕР¶РЅРѕ Р±С‹Р»Рѕ Р±С‹ РїСЂРѕСЃС‚Рѕ РїСЂРёР±Р°РІРёС‚СЊ moveAheadVector Рє РїРѕСЃР»РµРґРЅРµР№ СЃС‚СЂРѕС‡РєРµ view matrix, РЅРѕ СЌС‚Р° РјР°С‚СЂРёС†Р° СѓР¶Рµ С‚СЂР°РЅСЃРїРѕРЅРёСЂРѕРІР°РЅР°, РїРѕСЌС‚РѕРјСѓ С‚Р°Рє СЃРґРµР»Р°С‚СЊ РЅРµ РїРѕР»СѓС‡РёС‚СЃСЏ 
 				matricesWVP.mView = XMMatrixTranspose(XMMatrixTranslationFromVector(moveAheadVector)) * matricesWVP.mView;
-				//бляяя зачем я решил хранить позицию камеры в xmfloat3, нужно было в xmvector
-				// меняем позицию камеры относительно глобальных координат
+				//Р±Р»СЏСЏСЏ Р·Р°С‡РµРј СЏ СЂРµС€РёР» С…СЂР°РЅРёС‚СЊ РїРѕР·РёС†РёСЋ РєР°РјРµСЂС‹ РІ xmfloat3, РЅСѓР¶РЅРѕ Р±С‹Р»Рѕ РІ xmvector
+				// РјРµРЅСЏРµРј РїРѕР·РёС†РёСЋ РєР°РјРµСЂС‹ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РіР»РѕР±Р°Р»СЊРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚
 				sseProxyRegister0 = XMLoadFloat3(&currentCameraPos); 
 				sseProxyRegister0 += moveAheadVectorInGlobalCoord;
 				XMStoreFloat3(&currentCameraPos, sseProxyRegister0);
@@ -64,21 +64,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				break;
 			}
 		}
-		else // если сообщение поступило от мыши
+		else // РµСЃР»Рё СЃРѕРѕР±С‰РµРЅРёРµ РїРѕСЃС‚СѓРїРёР»Рѕ РѕС‚ РјС‹С€Рё
 		{
 			LONG mouseX = ((RAWINPUT*)lpRawInput)->data.mouse.lLastX;
 			LONG mouseY = ((RAWINPUT*)lpRawInput)->data.mouse.lLastY;
 			static XMVECTOR newYAxisRotation = g_XMIdentityR1;
 
-			XMMATRIX matrixRotationNewX = XMMatrixRotationX(-XM_PI * 0.0005 * mouseY); //матрица поворота вокруг оси X
-			XMMATRIX matrixRotationNewY = XMMatrixRotationNormal(newYAxisRotation, -XM_PI * 0.0005 * mouseX); //матрица поворота вокруг оси Y
-			newYAxisRotation = XMVector3Transform(newYAxisRotation, matrixRotationNewX); //статичная ось Y, вокруг которой происходит поворот
+			XMMATRIX matrixRotationNewX = XMMatrixRotationX(-XM_PI * 0.0005 * mouseY); //РјР°С‚СЂРёС†Р° РїРѕРІРѕСЂРѕС‚Р° РІРѕРєСЂСѓРі РѕСЃРё X
+			XMMATRIX matrixRotationNewY = XMMatrixRotationNormal(newYAxisRotation, -XM_PI * 0.0005 * mouseX); //РјР°С‚СЂРёС†Р° РїРѕРІРѕСЂРѕС‚Р° РІРѕРєСЂСѓРі РѕСЃРё Y
+			newYAxisRotation = XMVector3Transform(newYAxisRotation, matrixRotationNewX); //СЃС‚Р°С‚РёС‡РЅР°СЏ РѕСЃСЊ Y, РІРѕРєСЂСѓРі РєРѕС‚РѕСЂРѕР№ РїСЂРѕРёСЃС…РѕРґРёС‚ РїРѕРІРѕСЂРѕС‚
 			moveAheadVector = XMVector3Transform(moveAheadVector, matrixRotationNewX);
 			moveBackVector = (-1.0f) * moveAheadVector;
 
 			matricesWVP.mView = XMMatrixTranspose(matrixRotationNewX * matrixRotationNewY) * matricesWVP.mView;
 
-			//то же самое, только реализовано через построение новой матрицы вида
+			//С‚Рѕ Р¶Рµ СЃР°РјРѕРµ, С‚РѕР»СЊРєРѕ СЂРµР°Р»РёР·РѕРІР°РЅРѕ С‡РµСЂРµР· РїРѕСЃС‚СЂРѕРµРЅРёРµ РЅРѕРІРѕР№ РјР°С‚СЂРёС†С‹ РІРёРґР°
 			/*
 			static XMVECTOR newXAxisRotation = g_XMIdentityR0;
 			static XMVECTOR cameraZCoordinateInWorldSpace = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
@@ -97,25 +97,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			matricesWVP.mView = XMMatrixTranspose(matricesWVP.mView);
 			*/
 
-			//изменение moveAheadVector в глобальной системе координат
+			//РёР·РјРµРЅРµРЅРёРµ moveAheadVector РІ РіР»РѕР±Р°Р»СЊРЅРѕР№ СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚
 			sseProxyRegister0_Matrix = XMMatrixRotationY(XM_PI * 0.0005 * mouseX);
 			moveAheadVectorInGlobalCoord = XMVector3Transform(moveAheadVectorInGlobalCoord, sseProxyRegister0_Matrix);
-			//изменение moveRightVector в глобальной системе координат
+			//РёР·РјРµРЅРµРЅРёРµ moveRightVector РІ РіР»РѕР±Р°Р»СЊРЅРѕР№ СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚
 			moveRightVectorInGlobalCoord = XMVector3Transform(moveRightVectorInGlobalCoord, sseProxyRegister0_Matrix);
 		}
 		break; 
 	}
 
 	case(WM_PAINT): {
-		// заполнение структуры ps, и очистка Update Region
+		// Р·Р°РїРѕР»РЅРµРЅРёРµ СЃС‚СЂСѓРєС‚СѓСЂС‹ ps, Рё РѕС‡РёСЃС‚РєР° Update Region
 		hdc = BeginPaint(hWnd, &ps);
 
-		// очистка Update Region, и освобождение Device Context
+		// РѕС‡РёСЃС‚РєР° Update Region, Рё РѕСЃРІРѕР±РѕР¶РґРµРЅРёРµ Device Context
 		EndPaint(hWnd, &ps);
 		break;
 	} 
 	case(WM_DESTROY): {
-		//отправка сообщения WM_QUIT
+		//РѕС‚РїСЂР°РІРєР° СЃРѕРѕР±С‰РµРЅРёСЏ WM_QUIT
 		PostQuitMessage(0);
 		break;
 	}
@@ -125,8 +125,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 	UpdateScene();
 	DrawScene(objectsPositions);
-	// проверка на столкновение камеры с статическими и динамическими хитбоксами
-	// если камера перешла в другую область статических хитбоксов
+	// РїСЂРѕРІРµСЂРєР° РЅР° СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ РєР°РјРµСЂС‹ СЃ СЃС‚Р°С‚РёС‡РµСЃРєРёРјРё Рё РґРёРЅР°РјРёС‡РµСЃРєРёРјРё С…РёС‚Р±РѕРєСЃР°РјРё
+	// РµСЃР»Рё РєР°РјРµСЂР° РїРµСЂРµС€Р»Р° РІ РґСЂСѓРіСѓСЋ РѕР±Р»Р°СЃС‚СЊ СЃС‚Р°С‚РёС‡РµСЃРєРёС… С…РёС‚Р±РѕРєСЃРѕРІ
 	if (ChangesOfStaticHtBoxesArea) {
 		DefineCurrentStaticHtBoxesArea();
 	}
@@ -139,72 +139,72 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 HRESULT CreateDirect3DComponents(UINT widthParam, UINT heightParam) {
 	HRESULT hr;
 
-	//ИНИЦИАЛИЗАЦИЯ DirectX КОМПОНЕНТОВ	
+	//РРќРР¦РРђР›РР—РђР¦РРЇ DirectX РљРћРњРџРћРќР•РќРўРћР’	
 
-	// Струкутра, описывающая back buffer SwapChain-a
+	// РЎС‚СЂСѓРєСѓС‚СЂР°, РѕРїРёСЃС‹РІР°СЋС‰Р°СЏ back buffer SwapChain-a
 	DXGI_MODE_DESC backBuffer;
 	ZeroMemory(&backBuffer, sizeof(DXGI_MODE_DESC));
-	// Ширина
+	// РЁРёСЂРёРЅР°
 	backBuffer.Width = widthParam;
-	// Высота
+	// Р’С‹СЃРѕС‚Р°
 	backBuffer.Height = heightParam;
-	// Частота обновления монитора
+	// Р§Р°СЃС‚РѕС‚Р° РѕР±РЅРѕРІР»РµРЅРёСЏ РјРѕРЅРёС‚РѕСЂР°
 	backBuffer.RefreshRate.Numerator = 60;
 	backBuffer.RefreshRate.Denominator = 1;
-	// Формат пикселей
+	// Р¤РѕСЂРјР°С‚ РїРёРєСЃРµР»РµР№
 	backBuffer.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	// Порядок создания изображения(Surface)
+	// РџРѕСЂСЏРґРѕРє СЃРѕР·РґР°РЅРёСЏ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ(Surface)
 	backBuffer.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	// Флаг, обозначающий то, как будет растягиваться изображение для соответствия резрешению заданного монитора
+	// Р¤Р»Р°Рі, РѕР±РѕР·РЅР°С‡Р°СЋС‰РёР№ С‚Рѕ, РєР°Рє Р±СѓРґРµС‚ СЂР°СЃС‚СЏРіРёРІР°С‚СЊСЃСЏ РёР·РѕР±СЂР°Р¶РµРЅРёРµ РґР»СЏ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ СЂРµР·СЂРµС€РµРЅРёСЋ Р·Р°РґР°РЅРЅРѕРіРѕ РјРѕРЅРёС‚РѕСЂР°
 	backBuffer.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
-	// Структура, описывающая цепь обмена (Swap Chain)
+	// РЎС‚СЂСѓРєС‚СѓСЂР°, РѕРїРёСЃС‹РІР°СЋС‰Р°СЏ С†РµРїСЊ РѕР±РјРµРЅР° (Swap Chain)
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(DXGI_SWAP_CHAIN_DESC));
-	// Описание backBuffer-a, который входит в состав Swap Chain-a
+	// РћРїРёСЃР°РЅРёРµ backBuffer-a, РєРѕС‚РѕСЂС‹Р№ РІС…РѕРґРёС‚ РІ СЃРѕСЃС‚Р°РІ Swap Chain-a
 	sd.BufferDesc = backBuffer;
-	// Описание мультисемплинга(не использую)
+	// РћРїРёСЃР°РЅРёРµ РјСѓР»СЊС‚РёСЃРµРјРїР»РёРЅРіР°(РЅРµ РёСЃРїРѕР»СЊР·СѓСЋ)
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
-	// Цель использования буферов
+	// Р¦РµР»СЊ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ Р±СѓС„РµСЂРѕРІ
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	// Количество буферов в Swap Chain-e (так как приложение работает в оконном режиме, то для двойной буферизации достаточно ввести кол-во буферов без учета дополнительного Front Buffer-a
-	//(Front Buffer-ом является рабочий стол)), но для full-screen mode приложения необходимо ввести 2 буфера для двойной буферизации
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ Р±СѓС„РµСЂРѕРІ РІ Swap Chain-e (С‚Р°Рє РєР°Рє РїСЂРёР»РѕР¶РµРЅРёРµ СЂР°Р±РѕС‚Р°РµС‚ РІ РѕРєРѕРЅРЅРѕРј СЂРµР¶РёРјРµ, С‚Рѕ РґР»СЏ РґРІРѕР№РЅРѕР№ Р±СѓС„РµСЂРёР·Р°С†РёРё РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РІРІРµСЃС‚Рё РєРѕР»-РІРѕ Р±СѓС„РµСЂРѕРІ Р±РµР· СѓС‡РµС‚Р° РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРіРѕ Front Buffer-a
+	//(Front Buffer-РѕРј СЏРІР»СЏРµС‚СЃСЏ СЂР°Р±РѕС‡РёР№ СЃС‚РѕР»)), РЅРѕ РґР»СЏ full-screen mode РїСЂРёР»РѕР¶РµРЅРёСЏ РЅРµРѕР±С…РѕРґРёРјРѕ РІРІРµСЃС‚Рё 2 Р±СѓС„РµСЂР° РґР»СЏ РґРІРѕР№РЅРѕР№ Р±СѓС„РµСЂРёР·Р°С†РёРё
 	sd.BufferCount = 2;
-	// Дескриптор окна приложения
+	// Р”РµСЃРєСЂРёРїС‚РѕСЂ РѕРєРЅР° РїСЂРёР»РѕР¶РµРЅРёСЏ
 	sd.OutputWindow = g_hWnd;
-	// Вывод происходит в windowed mode или full-screen mode
+	// Р’С‹РІРѕРґ РїСЂРѕРёСЃС…РѕРґРёС‚ РІ windowed mode РёР»Рё full-screen mode
 	sd.Windowed = TRUE;
-	// Что должен делать драйвер после того, как front buffer стал back buffer-ом
+	// Р§С‚Рѕ РґРѕР»Р¶РµРЅ РґРµР»Р°С‚СЊ РґСЂР°Р№РІРµСЂ РїРѕСЃР»Рµ С‚РѕРіРѕ, РєР°Рє front buffer СЃС‚Р°Р» back buffer-РѕРј
 	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	// Дополнительные параметры Swap Chain-а
+	// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ Swap Chain-Р°
 	sd.Flags = NULL;
 
-	// Этап Создания Device, Device Contex, Swap Chain, Render Target View, View Port
+	// Р­С‚Р°Рї РЎРѕР·РґР°РЅРёСЏ Device, Device Contex, Swap Chain, Render Target View, View Port
 
-	// Определим feature level, который поддерживается видеокартой, и определим используемый тип драйвера
+	// РћРїСЂРµРґРµР»РёРј feature level, РєРѕС‚РѕСЂС‹Р№ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ РІРёРґРµРѕРєР°СЂС‚РѕР№, Рё РѕРїСЂРµРґРµР»РёРј РёСЃРїРѕР»СЊР·СѓРµРјС‹Р№ С‚РёРї РґСЂР°Р№РІРµСЂР°
 	D3D_FEATURE_LEVEL featureLevels[] = {
 		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0 };
 
-	// Количество элементов в массиве featureLevels
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ РјР°СЃСЃРёРІРµ featureLevels
 	UINT numFeatureLevels = sizeof(featureLevels) / sizeof(D3D_FEATURE_LEVEL);
 
-	// Хотя я буду использовать только hardware type
+	// РҐРѕС‚СЏ СЏ Р±СѓРґСѓ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚РѕР»СЊРєРѕ hardware type
 	D3D_DRIVER_TYPE driverTypes[] = {
 		D3D_DRIVER_TYPE_HARDWARE,
 		D3D_DRIVER_TYPE_REFERENCE,
 		D3D_DRIVER_TYPE_SOFTWARE
 	};
 
-	// Количество элементов в массиве dreiverTypes
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ РјР°СЃСЃРёРІРµ dreiverTypes
 	UINT numDriverTypes = sizeof(driverTypes) / sizeof(D3D_DRIVER_TYPE);
 
-	// Собственно создание Direct3D Device, Device Context, Swap Chain, View Port
+	// РЎРѕР±СЃС‚РІРµРЅРЅРѕ СЃРѕР·РґР°РЅРёРµ Direct3D Device, Device Context, Swap Chain, View Port
 
-	// Результат вызова CreateDeviceAndSwapChain
+	// Р РµР·СѓР»СЊС‚Р°С‚ РІС‹Р·РѕРІР° CreateDeviceAndSwapChain
 	HRESULT createDeviceDeviceContextSwapChainResult(S_OK);
 
 	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; ++driverTypeIndex) {
@@ -213,27 +213,27 @@ HRESULT CreateDirect3DComponents(UINT widthParam, UINT heightParam) {
 			goto createDeviceDeviceContextSwapChainLoopExit;
 		}
 	}
-	// Неуспешный выход из цикла
+	// РќРµСѓСЃРїРµС€РЅС‹Р№ РІС‹С…РѕРґ РёР· С†РёРєР»Р°
 	return createDeviceDeviceContextSwapChainResult;
-	// Успешный выход из цикла
+	// РЈСЃРїРµС€РЅС‹Р№ РІС‹С…РѕРґ РёР· С†РёРєР»Р°
 createDeviceDeviceContextSwapChainLoopExit:
 
-	// Получение доступа к back buffer
-	// Указатель на back buffer
+	// РџРѕР»СѓС‡РµРЅРёРµ РґРѕСЃС‚СѓРїР° Рє back buffer
+	// РЈРєР°Р·Р°С‚РµР»СЊ РЅР° back buffer
 	ID3D11Texture2D* pBackBuffer(NULL); 
 	hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
 	if (FAILED(hr)) {
 		return hr;
 	}
 
-	// Создание Render Target View
+	// РЎРѕР·РґР°РЅРёРµ Render Target View
 	g_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_pRenderTargetView);
 
-	// Освобождение интерфейса back buffer, back buffer больше не нужен 
+	// РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ РёРЅС‚РµСЂС„РµР№СЃР° back buffer, back buffer Р±РѕР»СЊС€Рµ РЅРµ РЅСѓР¶РµРЅ 
 	pBackBuffer->Release();
-	pBackBuffer = NULL; // хотя занулять не обязательно, в данном случае
+	pBackBuffer = NULL; // С…РѕС‚СЏ Р·Р°РЅСѓР»СЏС‚СЊ РЅРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ, РІ РґР°РЅРЅРѕРј СЃР»СѓС‡Р°Рµ
 
-	// Создание View Port, области поверхности RTV, которая и будет отображаться на дисплей. Также view port переводит RTV из пиксельных координат к числовым координатам 
+	// РЎРѕР·РґР°РЅРёРµ View Port, РѕР±Р»Р°СЃС‚Рё РїРѕРІРµСЂС…РЅРѕСЃС‚Рё RTV, РєРѕС‚РѕСЂР°СЏ Рё Р±СѓРґРµС‚ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊСЃСЏ РЅР° РґРёСЃРїР»РµР№. РўР°РєР¶Рµ view port РїРµСЂРµРІРѕРґРёС‚ RTV РёР· РїРёРєСЃРµР»СЊРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚ Рє С‡РёСЃР»РѕРІС‹Рј РєРѕРѕСЂРґРёРЅР°С‚Р°Рј 
 	D3D11_VIEWPORT viewPort;
 	ZeroMemory(&viewPort, sizeof(D3D11_VIEWPORT));
 
@@ -241,14 +241,14 @@ createDeviceDeviceContextSwapChainLoopExit:
 	viewPort.TopLeftY = 0;
 	viewPort.Width = widthParam;
 	viewPort.Height = heightParam;
-	// Уровень удаленности объектов, которые будут отображаться в view port
+	// РЈСЂРѕРІРµРЅСЊ СѓРґР°Р»РµРЅРЅРѕСЃС‚Рё РѕР±СЉРµРєС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ Р±СѓРґСѓС‚ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊСЃСЏ РІ view port
 	viewPort.MinDepth = 0.0f;
 	viewPort.MaxDepth = 1.0f;
 
-	// Связывание view port с графическим конвейером
+	// РЎРІСЏР·С‹РІР°РЅРёРµ view port СЃ РіСЂР°С„РёС‡РµСЃРєРёРј РєРѕРЅРІРµР№РµСЂРѕРј
 	g_pImmediateContext->RSSetViewports(1, &viewPort);
 
-	// Описание depth stencil буфера
+	// РћРїРёСЃР°РЅРёРµ depth stencil Р±СѓС„РµСЂР°
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 	depthStencilDesc.Width = widthParam;
 	depthStencilDesc.Height = heightParam;
@@ -264,7 +264,7 @@ createDeviceDeviceContextSwapChainLoopExit:
 
 	g_pd3dDevice->CreateTexture2D(&depthStencilDesc, NULL, &depthStencilTexture);
 
-	// описание того, как будет выполнятся z-test и stencil-test
+	// РѕРїРёСЃР°РЅРёРµ С‚РѕРіРѕ, РєР°Рє Р±СѓРґРµС‚ РІС‹РїРѕР»РЅСЏС‚СЃСЏ z-test Рё stencil-test
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
 	dsDesc.DepthEnable = TRUE;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
@@ -275,103 +275,103 @@ createDeviceDeviceContextSwapChainLoopExit:
 	dsDesc.FrontFace = { D3D11_STENCIL_OP_KEEP , D3D11_STENCIL_OP_KEEP , D3D11_STENCIL_OP_KEEP , D3D11_COMPARISON_ALWAYS };
 	dsDesc.BackFace = { D3D11_STENCIL_OP_KEEP , D3D11_STENCIL_OP_KEEP , D3D11_STENCIL_OP_KEEP , D3D11_COMPARISON_NEVER };
 
-	// создание состояния depth-stencil теста
+	// СЃРѕР·РґР°РЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ depth-stencil С‚РµСЃС‚Р°
 	g_pd3dDevice->CreateDepthStencilState(&dsDesc, &pDSState);
 
-	// связывание настроек depth-stencil теста с OM stage
+	// СЃРІСЏР·С‹РІР°РЅРёРµ РЅР°СЃС‚СЂРѕРµРє depth-stencil С‚РµСЃС‚Р° СЃ OM stage
 	g_pImmediateContext->OMSetDepthStencilState(pDSState, 1);
 
-	// описание depth-stencil view
+	// РѕРїРёСЃР°РЅРёРµ depth-stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
 	descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Flags = NULL;
 	descDSV.Texture2D.MipSlice = 0;
 
-	// создание depth-stencil view
+	// СЃРѕР·РґР°РЅРёРµ depth-stencil view
 	g_pd3dDevice->CreateDepthStencilView(depthStencilTexture, &descDSV, &g_pDepthStencilView);
 
-	// Привязка RTV и DSV к Output-Merger Stage
+	// РџСЂРёРІСЏР·РєР° RTV Рё DSV Рє Output-Merger Stage
 	g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
 
-	// описание состояния растеризатора
+	// РѕРїРёСЃР°РЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ СЂР°СЃС‚РµСЂРёР·Р°С‚РѕСЂР°
 	D3D11_RASTERIZER_DESC rasterizerState;
 	ZeroMemory(&rasterizerState, sizeof(D3D11_RASTERIZER_DESC));
 	rasterizerState.FillMode = D3D11_FILL_SOLID;
 	rasterizerState.CullMode = D3D11_CULL_BACK;
 	rasterizerState.DepthClipEnable = TRUE;
 
-	// создание состояния растеризатора
+	// СЃРѕР·РґР°РЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ СЂР°СЃС‚РµСЂРёР·Р°С‚РѕСЂР°
 	g_pd3dDevice->CreateRasterizerState(&rasterizerState, &pRasterizerState);
 
-	// связывание состояния растеризатора с стадией растеризации
+	// СЃРІСЏР·С‹РІР°РЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ СЂР°СЃС‚РµСЂРёР·Р°С‚РѕСЂР° СЃ СЃС‚Р°РґРёРµР№ СЂР°СЃС‚РµСЂРёР·Р°С†РёРё
 	g_pImmediateContext->RSSetState(pRasterizerState);
 
 	return S_OK;
 };
 
 HRESULT MyCreateWindow(CONST WCHAR* wndClassNameParam, CONST WCHAR* wndNameParam, int widthParam, int heightParam, HINSTANCE hInstanceParam, int nShowCmdParam) {
-	// Структура, описывающая класс Окна
+	// РЎС‚СЂСѓРєС‚СѓСЂР°, РѕРїРёСЃС‹РІР°СЋС‰Р°СЏ РєР»Р°СЃСЃ РћРєРЅР°
 	WNDCLASSEX wndClass;
 	ZeroMemory(&wndClass, sizeof(WNDCLASSEX));
-	// Размер структуры wndClass
+	// Р Р°Р·РјРµСЂ СЃС‚СЂСѓРєС‚СѓСЂС‹ wndClass
 	wndClass.cbSize = sizeof(WNDCLASSEX);
-	// Стиль класса окна
+	// РЎС‚РёР»СЊ РєР»Р°СЃСЃР° РѕРєРЅР°
 	wndClass.style = CS_HREDRAW | CS_VREDRAW;
-	// Указатель на функцию, обрабатывающую сообщения, поступающие окну
+	// РЈРєР°Р·Р°С‚РµР»СЊ РЅР° С„СѓРЅРєС†РёСЋ, РѕР±СЂР°Р±Р°С‚С‹РІР°СЋС‰СѓСЋ СЃРѕРѕР±С‰РµРЅРёСЏ, РїРѕСЃС‚СѓРїР°СЋС‰РёРµ РѕРєРЅСѓ
 	wndClass.lpfnWndProc = StartUpWndProc;
-	// Количество дополнительных байтов для структуры wndClass
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… Р±Р°Р№С‚РѕРІ РґР»СЏ СЃС‚СЂСѓРєС‚СѓСЂС‹ wndClass
 	wndClass.cbClsExtra = NULL;
-	// Количество дополнительных байтов для экземпляра окна
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… Р±Р°Р№С‚РѕРІ РґР»СЏ СЌРєР·РµРјРїР»СЏСЂР° РѕРєРЅР°
 	wndClass.cbWndExtra = NULL;
-	// Дескриптор приложения
+	// Р”РµСЃРєСЂРёРїС‚РѕСЂ РїСЂРёР»РѕР¶РµРЅРёСЏ
 	wndClass.hInstance = hInstanceParam;
-	// Дексриптор иконки окна
+	// Р”РµРєСЃСЂРёРїС‚РѕСЂ РёРєРѕРЅРєРё РѕРєРЅР°
 	wndClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	// Дескриптор курсора окна
+	// Р”РµСЃРєСЂРёРїС‚РѕСЂ РєСѓСЂСЃРѕСЂР° РѕРєРЅР°
 	wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-	// Дескриптор кисти
+	// Р”РµСЃРєСЂРёРїС‚РѕСЂ РєРёСЃС‚Рё
 	wndClass.hbrBackground = CreateSolidBrush(RGB(0, 0, 0));
-	// Указатель на строку-имя меню класса 
+	// РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂРѕРєСѓ-РёРјСЏ РјРµРЅСЋ РєР»Р°СЃСЃР° 
 	wndClass.lpszMenuName = NULL;
-	// Имя класса окна
+	// РРјСЏ РєР»Р°СЃСЃР° РѕРєРЅР°
 	wndClass.lpszClassName = wndClassNameParam;
-	// Дескриптор иконки окна, которая отображается на панели задач
+	// Р”РµСЃРєСЂРёРїС‚РѕСЂ РёРєРѕРЅРєРё РѕРєРЅР°, РєРѕС‚РѕСЂР°СЏ РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ РЅР° РїР°РЅРµР»Рё Р·Р°РґР°С‡
 	wndClass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
-	// Регистрация класса окна
+	// Р РµРіРёСЃС‚СЂР°С†РёСЏ РєР»Р°СЃСЃР° РѕРєРЅР°
 	if (RegisterClassEx(&wndClass) == 0) {
 		return E_FAIL;
 	}
 
-	// Создание окна
+	// РЎРѕР·РґР°РЅРёРµ РѕРєРЅР°
 	g_hWnd = CreateWindowEx(NULL, wndClassNameParam, wndNameParam, WS_OVERLAPPEDWINDOW, 0, 0, widthParam, heightParam, NULL, NULL, hInstanceParam, NULL);
 	if (g_hWnd == 0) {
 		return E_FAIL;
 	}
 
-	// регистрация устройств клавиатуры и мыши
+	// СЂРµРіРёСЃС‚СЂР°С†РёСЏ СѓСЃС‚СЂРѕР№СЃС‚РІ РєР»Р°РІРёР°С‚СѓСЂС‹ Рё РјС‹С€Рё
 	RAWINPUTDEVICE rid[2];
-	// клавиатура
+	// РєР»Р°РІРёР°С‚СѓСЂР°
 	rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
 	rid[0].usUsage = HID_USAGE_GENERIC_KEYBOARD;
 	rid[0].dwFlags = RIDEV_NOLEGACY;
 	rid[0].hwndTarget = g_hWnd;
-	// мышь
+	// РјС‹С€СЊ
 	rid[1].usUsagePage = HID_USAGE_PAGE_GENERIC;
 	rid[1].usUsage = HID_USAGE_GENERIC_MOUSE;
 	rid[1].dwFlags = RIDEV_NOLEGACY;
 	rid[1].hwndTarget = g_hWnd;
 	RegisterRawInputDevices(rid, 2, sizeof(rid[0]));
 
-	// Вывод окна на дисплей 
+	// Р’С‹РІРѕРґ РѕРєРЅР° РЅР° РґРёСЃРїР»РµР№ 
 	ShowWindow(g_hWnd, nShowCmdParam);
 
 	return S_OK;
 };
 
 void UpdateScene() {
-	// обновление угла поворота пирамиды
+	// РѕР±РЅРѕРІР»РµРЅРёРµ СѓРіР»Р° РїРѕРІРѕСЂРѕС‚Р° РїРёСЂР°РјРёРґС‹
 	if (angleCBufferData.angle0 >= XM_2PI) {
 		angleCBufferData.angle0 = angleCBufferData.angle0 - XM_2PI + ROTATION_ANGLE;
 	}
@@ -384,65 +384,65 @@ void UpdateScene() {
 	g_pImmediateContext->Unmap(pAngleBuffer, 0);
 	*/
 
-	// обновление значений угла
+	// РѕР±РЅРѕРІР»РµРЅРёРµ Р·РЅР°С‡РµРЅРёР№ СѓРіР»Р°
 	g_pImmediateContext->UpdateSubresource(constantBufferArray[1], 0, NULL, &angleCBufferData, 0, 0); 
 	
-	// обновление матрицы поворота вокруг оси
-	// проверяю то, что сам написал
+	// РѕР±РЅРѕРІР»РµРЅРёРµ РјР°С‚СЂРёС†С‹ РїРѕРІРѕСЂРѕС‚Р° РІРѕРєСЂСѓРі РѕСЃРё
+	// РїСЂРѕРІРµСЂСЏСЋ С‚Рѕ, С‡С‚Рѕ СЃР°Рј РЅР°РїРёСЃР°Р»
 	//RotationAroundAxis(g_XMIdentityR1, g_XMZero, angleCBufferData.angle0, &matricesWVP.mRotationAroundAxis);
 	//matricesWVP.mRotationAroundAxis = XMMatrixTranspose(matricesWVP.mRotationAroundAxis);
 
-	// обновление матрицы поворота вокруг оси
+	// РѕР±РЅРѕРІР»РµРЅРёРµ РјР°С‚СЂРёС†С‹ РїРѕРІРѕСЂРѕС‚Р° РІРѕРєСЂСѓРі РѕСЃРё
 	matricesWVP.mRotationAroundAxis = XMMatrixTranspose(XMMatrixRotationAxis(g_XMIdentityR1, angleCBufferData.angle0));
 	/**/
-	//изменение динамических хитбоксов
+	//РёР·РјРµРЅРµРЅРёРµ РґРёРЅР°РјРёС‡РµСЃРєРёС… С…РёС‚Р±РѕРєСЃРѕРІ
 	for (int i = 0; i < DYNAMIC_HIT_BOX_AMOUNT; ++i) {
-		// если хитбокс вышел за пределы карты
+		// РµСЃР»Рё С…РёС‚Р±РѕРєСЃ РІС‹С€РµР» Р·Р° РїСЂРµРґРµР»С‹ РєР°СЂС‚С‹
 		if (DynamicHitBoxesArray[i].activeCyclesAmount == 0.0f) {
-			//возвращаем хитбокс в точку его спавна
+			//РІРѕР·РІСЂР°С‰Р°РµРј С…РёС‚Р±РѕРєСЃ РІ С‚РѕС‡РєСѓ РµРіРѕ СЃРїР°РІРЅР°
 			DynamicHitBoxesArray[i].position = DynamicHitBoxesArray[i].startPosition;
-			//новый вектор движения
+			//РЅРѕРІС‹Р№ РІРµРєС‚РѕСЂ РґРІРёР¶РµРЅРёСЏ
 			CreateNewMoveVectorForDynamicHitBox(&DynamicHitBoxesArray[i]);
-			//через сколько циклов хитбокс снова покинет карту
+			//С‡РµСЂРµР· СЃРєРѕР»СЊРєРѕ С†РёРєР»РѕРІ С…РёС‚Р±РѕРєСЃ СЃРЅРѕРІР° РїРѕРєРёРЅРµС‚ РєР°СЂС‚Сѓ
 			DynamicHitBoxesArray[i].activeCyclesAmount = DynamicHitBoxCyclesAmount(&DynamicHitBoxesArray[i]);
-			// поворот хитбокса
+			// РїРѕРІРѕСЂРѕС‚ С…РёС‚Р±РѕРєСЃР°
 			if (DynamicHitBoxesArray[i].angle >= XM_2PI) {
 				DynamicHitBoxesArray[i].activeCyclesAmount += -XM_2PI + ROTATION_ANGLE;
 			}
 			DynamicHitBoxesArray[i].activeCyclesAmount += ROTATION_ANGLE;
-			//измеяем позицию пирамиды
+			//РёР·РјРµСЏРµРј РїРѕР·РёС†РёСЋ РїРёСЂР°РјРёРґС‹
 			objectsPositions[i] = XMLoadFloat3(&DynamicHitBoxesArray[i].startPosition);
 		}
 		else {
 			MoveAndRotationDynamicHitBox(*DynamicHitBoxesArray[i].moveVectorPtr, ROTATION_ANGLE, &DynamicHitBoxesArray[i]);
 			--DynamicHitBoxesArray[i].activeCyclesAmount;
-			//измеяем позицию пирамиды
+			//РёР·РјРµСЏРµРј РїРѕР·РёС†РёСЋ РїРёСЂР°РјРёРґС‹
 			objectsPositions[i] = XMLoadFloat3(&DynamicHitBoxesArray[i].position);
 		}
 	}
 };
 
 void DrawScene(XMVECTOR* objectsPositionsArray) {
-	// Цвет пикселя
+	// Р¦РІРµС‚ РїРёРєСЃРµР»СЏ
 	const FLOAT backgroundColor[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 
-	// Устанавливает цвет всеч пикселей поверхности RTV к единому значению
+	// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С†РІРµС‚ РІСЃРµС‡ РїРёРєСЃРµР»РµР№ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё RTV Рє РµРґРёРЅРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ
 	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, backgroundColor);
 
-	// оччистка depth-stencil буфера
+	// РѕС‡С‡РёСЃС‚РєР° depth-stencil Р±СѓС„РµСЂР°
 	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	//отрисовка каждой пирамиды
+	//РѕС‚СЂРёСЃРѕРІРєР° РєР°Р¶РґРѕР№ РїРёСЂР°РјРёРґС‹
 	for (int i = 0; i < 3; ++i) {
 		SetWorldMatrix(objectsPositionsArray[i], XMVECTORF32{ 1.0f, 1.0f, 1.0f, 0.0f }, & matricesWVP.mWorld);
 		g_pImmediateContext->UpdateSubresource(constantBufferArray[0], 0, NULL, &matricesWVP, 0, 0);
 
 		g_pImmediateContext->DrawIndexed(12, 0, 0);
 	}
-	// отрисовка примитивов 
+	// РѕС‚СЂРёСЃРѕРІРєР° РїСЂРёРјРёС‚РёРІРѕРІ 
 	//g_pImmediateContext->DrawIndexed(12, 0, 0);
 
-	// Вывод на дисплей поверхности Back Buffer
+	// Р’С‹РІРѕРґ РЅР° РґРёСЃРїР»РµР№ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё Back Buffer
 	g_pSwapChain->Present(0, 0);
 
 	g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
@@ -455,12 +455,12 @@ HRESULT CompileShader(LPCWSTR srcName, LPCSTR entryPoint, LPCSTR target, ID3DBlo
 	DWORD bytesWritten = NULL;
 
 	hr = D3DCompileFromFile(srcName, NULL, NULL, entryPoint, target, D3DCOMPILE_DEBUG, NULL, buffer, &errorsBuffer);
-	// вывод ошибок компиляции, если они есть
+	// РІС‹РІРѕРґ РѕС€РёР±РѕРє РєРѕРјРїРёР»СЏС†РёРё, РµСЃР»Рё РѕРЅРё РµСЃС‚СЊ
 	if (FAILED(hr)) {
 		if (errorsBuffer != NULL) {
-			// создаем или открываем файл, где будет находится текст с ошибками компиляции шейдера
+			// СЃРѕР·РґР°РµРј РёР»Рё РѕС‚РєСЂС‹РІР°РµРј С„Р°Р№Р», РіРґРµ Р±СѓРґРµС‚ РЅР°С…РѕРґРёС‚СЃСЏ С‚РµРєСЃС‚ СЃ РѕС€РёР±РєР°РјРё РєРѕРјРїРёР»СЏС†РёРё С€РµР№РґРµСЂР°
 			errorsFileHandle = CreateFile(L"shaderErrors.txt", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-			// записываем ошибки компиляции в файл
+			// Р·Р°РїРёСЃС‹РІР°РµРј РѕС€РёР±РєРё РєРѕРјРїРёР»СЏС†РёРё РІ С„Р°Р№Р»
 			WriteFile(errorsFileHandle, errorsBuffer->GetBufferPointer(), errorsBuffer->GetBufferSize(), &bytesWritten, NULL);
 			CloseHandle(errorsFileHandle);
 			errorsBuffer->Release();
@@ -476,83 +476,83 @@ HRESULT CompileShader(LPCWSTR srcName, LPCSTR entryPoint, LPCSTR target, ID3DBlo
 HRESULT InitGeometry(Vertex* vertexArray, LPCWSTR vertexShaderName, LPCWSTR pixelShaderName, LPCSTR vsShaderEntryPoint, LPCSTR psShaderEntryPoint) {
 	HRESULT hr;
 
-	// описание vertex buffer
+	// РѕРїРёСЃР°РЅРёРµ vertex buffer
 	D3D11_BUFFER_DESC vertexBufferDesc;
-	// размер буфера
+	// СЂР°Р·РјРµСЂ Р±СѓС„РµСЂР°
 	vertexBufferDesc.ByteWidth = sizeof(Vertex) * 4;
-	// уровень доступа CPU и GPU к буферу 
+	// СѓСЂРѕРІРµРЅСЊ РґРѕСЃС‚СѓРїР° CPU Рё GPU Рє Р±СѓС„РµСЂСѓ 
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	// к какой стадии конвейера привязывать буфер
+	// Рє РєР°РєРѕР№ СЃС‚Р°РґРёРё РєРѕРЅРІРµР№РµСЂР° РїСЂРёРІСЏР·С‹РІР°С‚СЊ Р±СѓС„РµСЂ
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	// уровень доступа CPU к буферу
+	// СѓСЂРѕРІРµРЅСЊ РґРѕСЃС‚СѓРїР° CPU Рє Р±СѓС„РµСЂСѓ
 	vertexBufferDesc.CPUAccessFlags = 0;
-	// дополнительные параметры буфера
+	// РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ Р±СѓС„РµСЂР°
 	vertexBufferDesc.MiscFlags = 0;
-	// размер каждого элемента буфера, если данный буфер является structured buffer. (не использую)
+	// СЂР°Р·РјРµСЂ РєР°Р¶РґРѕРіРѕ СЌР»РµРјРµРЅС‚Р° Р±СѓС„РµСЂР°, РµСЃР»Рё РґР°РЅРЅС‹Р№ Р±СѓС„РµСЂ СЏРІР»СЏРµС‚СЃСЏ structured buffer. (РЅРµ РёСЃРїРѕР»СЊР·СѓСЋ)
 	vertexBufferDesc.StructureByteStride = 0;
 
-	// информация для инициализации подресурса
+	// РёРЅС„РѕСЂРјР°С†РёСЏ РґР»СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РїРѕРґСЂРµСЃСѓСЂСЃР°
 	D3D11_SUBRESOURCE_DATA vertexBufferSubresourceInitData;
-	// указатель на инициализируемые данные
+	// СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРјС‹Рµ РґР°РЅРЅС‹Рµ
 	vertexBufferSubresourceInitData.pSysMem = vertexArray;
-	// смещение
+	// СЃРјРµС‰РµРЅРёРµ
 	vertexBufferSubresourceInitData.SysMemPitch = 0;
-	// смещение
+	// СЃРјРµС‰РµРЅРёРµ
 	vertexBufferSubresourceInitData.SysMemSlicePitch = 0;
 
-	// создание vertex buffer
+	// СЃРѕР·РґР°РЅРёРµ vertex buffer
 	hr = g_pd3dDevice->CreateBuffer(&vertexBufferDesc, &vertexBufferSubresourceInitData, &pVertexBuffer);
 	if (FAILED(hr)) {
 		return hr;
 	}
 
-	// привязка vertex buffer к IA stage
-	// колчиство байт конкретного вершинного буфера, которое будет использоваться дальше
+	// РїСЂРёРІСЏР·РєР° vertex buffer Рє IA stage
+	// РєРѕР»С‡РёСЃС‚РІРѕ Р±Р°Р№С‚ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РІРµСЂС€РёРЅРЅРѕРіРѕ Р±СѓС„РµСЂР°, РєРѕС‚РѕСЂРѕРµ Р±СѓРґРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ РґР°Р»СЊС€Рµ
 	UINT stride[] = { sizeof(Vertex) };
-	// смещение до первого элемента конкретного вершинного буфера, который будет использован
+	// СЃРјРµС‰РµРЅРёРµ РґРѕ РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РІРµСЂС€РёРЅРЅРѕРіРѕ Р±СѓС„РµСЂР°, РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°РЅ
 	UINT offset[] = { 0 };
 	g_pImmediateContext->IASetVertexBuffers(0, 1, &pVertexBuffer, stride, offset);
 
-	// указание какие примитивы собирать из вершинного буфера
+	// СѓРєР°Р·Р°РЅРёРµ РєР°РєРёРµ РїСЂРёРјРёС‚РёРІС‹ СЃРѕР±РёСЂР°С‚СЊ РёР· РІРµСЂС€РёРЅРЅРѕРіРѕ Р±СѓС„РµСЂР°
 	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// компиляция шейдеров
+	// РєРѕРјРїРёР»СЏС†РёСЏ С€РµР№РґРµСЂРѕРІ
 	SHADERS_MODEL(g_featureLevel)
 
-	// компиляция вершинного шейдера
+	// РєРѕРјРїРёР»СЏС†РёСЏ РІРµСЂС€РёРЅРЅРѕРіРѕ С€РµР№РґРµСЂР°
 	hr = CompileShader(vertexShaderName, vsShaderEntryPoint, shadersModel.vertexShaderModel, &VS_Buffer);
 	if (FAILED(hr)) {
 		return hr;
 	}
-	// компиляция пиксельного шейдера
+	// РєРѕРјРїРёР»СЏС†РёСЏ РїРёРєСЃРµР»СЊРЅРѕРіРѕ С€РµР№РґРµСЂР°
 	hr = CompileShader(pixelShaderName, psShaderEntryPoint, shadersModel.pixelShaderModel, &PS_Buffer);
 	if (FAILED(hr)) {
 		return hr;
 	}
 
-	// создание объекта вершинного шейдера
+	// СЃРѕР·РґР°РЅРёРµ РѕР±СЉРµРєС‚Р° РІРµСЂС€РёРЅРЅРѕРіРѕ С€РµР№РґРµСЂР°
 	hr = g_pd3dDevice->CreateVertexShader(VS_Buffer->GetBufferPointer(), VS_Buffer->GetBufferSize(), NULL, &g_pVertexShader);
-	// создание объекта пиксельного шейдера
+	// СЃРѕР·РґР°РЅРёРµ РѕР±СЉРµРєС‚Р° РїРёРєСЃРµР»СЊРЅРѕРіРѕ С€РµР№РґРµСЂР°
 	hr = g_pd3dDevice->CreatePixelShader(PS_Buffer->GetBufferPointer(), PS_Buffer->GetBufferSize(), NULL, &g_pPixelShader);
 	
-	// привязка вершинного шейдера к конвейеру
+	// РїСЂРёРІСЏР·РєР° РІРµСЂС€РёРЅРЅРѕРіРѕ С€РµР№РґРµСЂР° Рє РєРѕРЅРІРµР№РµСЂСѓ
 	g_pImmediateContext->VSSetShader(g_pVertexShader, NULL, NULL);
-	// привязка пиксельного шейдера к конвейеру
+	// РїСЂРёРІСЏР·РєР° РїРёРєСЃРµР»СЊРЅРѕРіРѕ С€РµР№РґРµСЂР° Рє РєРѕРЅРІРµР№РµСЂСѓ
 	g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, NULL);
 	
-	// Описание Input-Layout Object
+	// РћРїРёСЃР°РЅРёРµ Input-Layout Object
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 	
-	// Количество элементов в Input-Layout Object
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ Input-Layout Object
 	UINT numInputLayoutObject = sizeof(layout) / sizeof(D3D11_INPUT_ELEMENT_DESC);
 
-	// Создание Input-Layout Object
+	// РЎРѕР·РґР°РЅРёРµ Input-Layout Object
 	hr = g_pd3dDevice->CreateInputLayout(layout, numInputLayoutObject, VS_Buffer->GetBufferPointer(), VS_Buffer->GetBufferSize(), &g_pInputLayoutObject);
 
-	// Связывание Input-layout object с конвейером
+	// РЎРІСЏР·С‹РІР°РЅРёРµ Input-layout object СЃ РєРѕРЅРІРµР№РµСЂРѕРј
 	g_pImmediateContext->IASetInputLayout(g_pInputLayoutObject);
 
 	return S_OK;
@@ -561,7 +561,7 @@ HRESULT InitGeometry(Vertex* vertexArray, LPCWSTR vertexShaderName, LPCWSTR pixe
 HRESULT InitMatrices(WORD* indices) {
 	HRESULT hr;
 
-	// описание константного буфера матриц
+	// РѕРїРёСЃР°РЅРёРµ РєРѕРЅСЃС‚Р°РЅС‚РЅРѕРіРѕ Р±СѓС„РµСЂР° РјР°С‚СЂРёС†
 	D3D11_BUFFER_DESC constantBufferDesc;
 	constantBufferDesc.ByteWidth = sizeof(MatricesBuffer);
 	constantBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -570,13 +570,13 @@ HRESULT InitMatrices(WORD* indices) {
 	constantBufferDesc.MiscFlags = 0;
 	constantBufferDesc.StructureByteStride = 0;
 
-	// создание константного буфера матриц
+	// СЃРѕР·РґР°РЅРёРµ РєРѕРЅСЃС‚Р°РЅС‚РЅРѕРіРѕ Р±СѓС„РµСЂР° РјР°С‚СЂРёС†
 	hr = g_pd3dDevice->CreateBuffer(&constantBufferDesc, NULL, &constantBufferArray[0]);
 	if (FAILED(hr)) {
 		return hr;
 	}
 
-	// описание буфера угла
+	// РѕРїРёСЃР°РЅРёРµ Р±СѓС„РµСЂР° СѓРіР»Р°
 	D3D11_BUFFER_DESC angleBufferDesc;
 	angleBufferDesc.ByteWidth = sizeof(AngleConstantBuffer);
 	angleBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -585,38 +585,38 @@ HRESULT InitMatrices(WORD* indices) {
 	angleBufferDesc.MiscFlags = 0;
 	angleBufferDesc.StructureByteStride = 0;
 
-	// описание инициализирующей информации буфера угла
+	// РѕРїРёСЃР°РЅРёРµ РёРЅРёС†РёР°Р»РёР·РёСЂСѓСЋС‰РµР№ РёРЅС„РѕСЂРјР°С†РёРё Р±СѓС„РµСЂР° СѓРіР»Р°
 	D3D11_SUBRESOURCE_DATA angleBufferInitData;
 	angleBufferInitData.pSysMem = &angleCBufferData;
 	angleBufferInitData.SysMemPitch = 0;
 	angleBufferInitData.SysMemSlicePitch = 0;
 
-	// создание буфера угла
+	// СЃРѕР·РґР°РЅРёРµ Р±СѓС„РµСЂР° СѓРіР»Р°
 	hr = g_pd3dDevice->CreateBuffer(&angleBufferDesc, &angleBufferInitData, &constantBufferArray[1]);
 	if (FAILED(hr)) {
 		return hr;
 	}
 
-	// связывание констнатного буфера с шейдером вершин
+	// СЃРІСЏР·С‹РІР°РЅРёРµ РєРѕРЅСЃС‚РЅР°С‚РЅРѕРіРѕ Р±СѓС„РµСЂР° СЃ С€РµР№РґРµСЂРѕРј РІРµСЂС€РёРЅ
 	g_pImmediateContext->VSSetConstantBuffers(0, 2, constantBufferArray);
 	/*
-	//описание ресурса вершинного шейдера
+	//РѕРїРёСЃР°РЅРёРµ СЂРµСЃСѓСЂСЃР° РІРµСЂС€РёРЅРЅРѕРіРѕ С€РµР№РґРµСЂР°
 	D3D11_SHADER_RESOURCE_VIEW_DESC angleBufferVSResorceDesc;
 	angleBufferVSResorceDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	angleBufferVSResorceDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 	angleBufferVSResorceDesc.Buffer.FirstElement = 0;
 	angleBufferVSResorceDesc.Buffer.NumElements = 1;
 
-	//создание ресурса вершинного шейдера
+	//СЃРѕР·РґР°РЅРёРµ СЂРµСЃСѓСЂСЃР° РІРµСЂС€РёРЅРЅРѕРіРѕ С€РµР№РґРµСЂР°
 	hr = g_pd3dDevice->CreateShaderResourceView(pAngleBuffer, &angleBufferVSResorceDesc, &pAngleBufferVSResource);
 	if (FAILED(hr)) {
 		return hr;
 	}
 
-	// привязка ресурса с углом к шейдеру вершин
+	// РїСЂРёРІСЏР·РєР° СЂРµСЃСѓСЂСЃР° СЃ СѓРіР»РѕРј Рє С€РµР№РґРµСЂСѓ РІРµСЂС€РёРЅ
 	g_pImmediateContext->VSSetShaderResources(0, 1, &pAngleBufferVSResource);
 	*/
-	// описание индекс буфера
+	// РѕРїРёСЃР°РЅРёРµ РёРЅРґРµРєСЃ Р±СѓС„РµСЂР°
 	D3D11_BUFFER_DESC indexBufferDesc;
 	indexBufferDesc.ByteWidth = sizeof(WORD) * 4 * 3;
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -625,19 +625,19 @@ HRESULT InitMatrices(WORD* indices) {
 	indexBufferDesc.MiscFlags = 0;
 	indexBufferDesc.StructureByteStride = 0;
 
-	// значения индекс буфера
+	// Р·РЅР°С‡РµРЅРёСЏ РёРЅРґРµРєСЃ Р±СѓС„РµСЂР°
 	D3D11_SUBRESOURCE_DATA indexBufferInitData;
 	indexBufferInitData.pSysMem = indices;
 	indexBufferInitData.SysMemPitch = 0;
 	indexBufferInitData.SysMemSlicePitch = 0;
 
-	//создание индекс буфера
+	//СЃРѕР·РґР°РЅРёРµ РёРЅРґРµРєСЃ Р±СѓС„РµСЂР°
 	hr = g_pd3dDevice->CreateBuffer(&indexBufferDesc, &indexBufferInitData, &pIndexBuffer);
 	if (FAILED(hr)) {
 		return hr;
 	}
 
-	//привязка индекс буфера к конвейеру
+	//РїСЂРёРІСЏР·РєР° РёРЅРґРµРєСЃ Р±СѓС„РµСЂР° Рє РєРѕРЅРІРµР№РµСЂСѓ
 	g_pImmediateContext->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
 	return S_OK;
@@ -651,8 +651,8 @@ void SetProjectionMatrix(MatricesBuffer* pMatricesBuffer, FLOAT angleHoriz, FLOA
 	FLOAT tangentAngle;
 	FLOAT newCoeff;
 
-	//FLOAT nearZ = 2.5f; // ближняя плоскоть отсечения
-	//FLOAT farZ = 3.2f; // дальняя плоскость отсечения
+	//FLOAT nearZ = 2.5f; // Р±Р»РёР¶РЅСЏСЏ РїР»РѕСЃРєРѕС‚СЊ РѕС‚СЃРµС‡РµРЅРёСЏ
+	//FLOAT farZ = 3.2f; // РґР°Р»СЊРЅСЏСЏ РїР»РѕСЃРєРѕСЃС‚СЊ РѕС‚СЃРµС‡РµРЅРёСЏ
 	//FLOAT mulCoeff = (farZ - nearZ + 1.0f) / (farZ - nearZ);
 
 	FLOAT zCoeff = farZ / (farZ - nearZ);
@@ -698,8 +698,8 @@ void SetProjectionMatrixWithCameraDistance(MatricesBuffer* pMatricesBuffer, FLOA
 	FLOAT tangentAngle;
 	FLOAT newCoeff;
 
-	//nearZ = 0.6f; // ближняя плоскоть отсечения, деленная на W координату
-	//farZ = 4.2f; // дальняя плоскость отсечения, деленная на W координату
+	//nearZ = 0.6f; // Р±Р»РёР¶РЅСЏСЏ РїР»РѕСЃРєРѕС‚СЊ РѕС‚СЃРµС‡РµРЅРёСЏ, РґРµР»РµРЅРЅР°СЏ РЅР° W РєРѕРѕСЂРґРёРЅР°С‚Сѓ
+	//farZ = 4.2f; // РґР°Р»СЊРЅСЏСЏ РїР»РѕСЃРєРѕСЃС‚СЊ РѕС‚СЃРµС‡РµРЅРёСЏ, РґРµР»РµРЅРЅР°СЏ РЅР° W РєРѕРѕСЂРґРёРЅР°С‚Сѓ
 
 	FLOAT zCoeff = (farZ - nearZ + cameraDistance) / (farZ - nearZ);
 	FLOAT wCoeff = farZ - nearZ + cameraDistance - farZ * zCoeff;
@@ -768,24 +768,24 @@ FLOAT MaxElement(FLOAT arg0, FLOAT arg1) {
 };
 
 HRESULT InvertMatrix(XMVECTOR zAxis, XMVECTOR yAxis, XMMATRIX* invertibleMatrix) {
-	// проверка векторов на ортогональность 
+	// РїСЂРѕРІРµСЂРєР° РІРµРєС‚РѕСЂРѕРІ РЅР° РѕСЂС‚РѕРіРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ 
 	XMFLOAT4 dotProduct;
 	XMStoreFloat4(&dotProduct, XMVector3Dot(zAxis, yAxis));
 	if (dotProduct.x != 0.0f) {
 		return E_FAIL;
 	}
 	
-	// нахождение новой оси X
-	XMVECTOR xAxis = XMVector3Cross(yAxis, zAxis); // правая тройка векторов
-	// векторы линейно независимы, значит можно искать обратную матрицу
+	// РЅР°С…РѕР¶РґРµРЅРёРµ РЅРѕРІРѕР№ РѕСЃРё X
+	XMVECTOR xAxis = XMVector3Cross(yAxis, zAxis); // РїСЂР°РІР°СЏ С‚СЂРѕР№РєР° РІРµРєС‚РѕСЂРѕРІ
+	// РІРµРєС‚РѕСЂС‹ Р»РёРЅРµР№РЅРѕ РЅРµР·Р°РІРёСЃРёРјС‹, Р·РЅР°С‡РёС‚ РјРѕР¶РЅРѕ РёСЃРєР°С‚СЊ РѕР±СЂР°С‚РЅСѓСЋ РјР°С‚СЂРёС†Сѓ
 
-	// матрица обратная обратной матрице, обычная матрица
+	// РјР°С‚СЂРёС†Р° РѕР±СЂР°С‚РЅР°СЏ РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†Рµ, РѕР±С‹С‡РЅР°СЏ РјР°С‚СЂРёС†Р°
 	XMVECTOR axisArray[] = { xAxis, yAxis, zAxis };
 
-	// порядок строк в обратной матрице, который получился в результате поиска обратной матрицы
+	// РїРѕСЂСЏРґРѕРє СЃС‚СЂРѕРє РІ РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†Рµ, РєРѕС‚РѕСЂС‹Р№ РїРѕР»СѓС‡РёР»СЃСЏ РІ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РїРѕРёСЃРєР° РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹
 	int invertibleMatrixRowsOrder[3];
 
-	// единичная матрица
+	// РµРґРёРЅРёС‡РЅР°СЏ РјР°С‚СЂРёС†Р°
 	XMMATRIX invertibleMatrixOutput = {
 	 XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f),
 	 XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
@@ -793,18 +793,18 @@ HRESULT InvertMatrix(XMVECTOR zAxis, XMVECTOR yAxis, XMMATRIX* invertibleMatrix)
 	 XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)
 	};
 
-	//поиск обратной матрицы методом гаусса
-	for (size_t axisIndex = 0; axisIndex <= 1; ++axisIndex) { // обход вниз по строкам обычной матрицы
-		for (size_t i = 0; i <= 2; ++i) { // обход по координатам строки обычной матицы
+	//РїРѕРёСЃРє РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹ РјРµС‚РѕРґРѕРј РіР°СѓСЃСЃР°
+	for (size_t axisIndex = 0; axisIndex <= 1; ++axisIndex) { // РѕР±С…РѕРґ РІРЅРёР· РїРѕ СЃС‚СЂРѕРєР°Рј РѕР±С‹С‡РЅРѕР№ РјР°С‚СЂРёС†С‹
+		for (size_t i = 0; i <= 2; ++i) { // РѕР±С…РѕРґ РїРѕ РєРѕРѕСЂРґРёРЅР°С‚Р°Рј СЃС‚СЂРѕРєРё РѕР±С‹С‡РЅРѕР№ РјР°С‚РёС†С‹
 			float axisElement = XMVectorGetByIndex(axisArray[axisIndex], i);
 			if (axisElement != 0) {
 				axisArray[axisIndex] /= XMVectorSet(axisElement, axisElement, axisElement, axisElement);
 				invertibleMatrixOutput.r[axisIndex] /= XMVectorSet(axisElement, axisElement, axisElement, axisElement);
 				invertibleMatrixRowsOrder[axisIndex] = i;
 
-				for (size_t nextAxisIndex = axisIndex + 1; nextAxisIndex <= 2; ++nextAxisIndex) { // прибавление строки к другим строкам
+				for (size_t nextAxisIndex = axisIndex + 1; nextAxisIndex <= 2; ++nextAxisIndex) { // РїСЂРёР±Р°РІР»РµРЅРёРµ СЃС‚СЂРѕРєРё Рє РґСЂСѓРіРёРј СЃС‚СЂРѕРєР°Рј
 					float nextAxisElement = XMVectorGetByIndex(axisArray[nextAxisIndex], i);
-					XMVECTOR mulVector = axisArray[axisIndex] * XMVectorSet(-nextAxisElement, -nextAxisElement, -nextAxisElement, -nextAxisElement); // вместо простого умножения axisArray[axisIndex] на -nextAxisElement приходится умножать на вектор, так как в ином случае возникает сильная погрешность
+					XMVECTOR mulVector = axisArray[axisIndex] * XMVectorSet(-nextAxisElement, -nextAxisElement, -nextAxisElement, -nextAxisElement); // РІРјРµСЃС‚Рѕ РїСЂРѕСЃС‚РѕРіРѕ СѓРјРЅРѕР¶РµРЅРёСЏ axisArray[axisIndex] РЅР° -nextAxisElement РїСЂРёС…РѕРґРёС‚СЃСЏ СѓРјРЅРѕР¶Р°С‚СЊ РЅР° РІРµРєС‚РѕСЂ, С‚Р°Рє РєР°Рє РІ РёРЅРѕРј СЃР»СѓС‡Р°Рµ РІРѕР·РЅРёРєР°РµС‚ СЃРёР»СЊРЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ
 					XMVECTOR invertMatrixMulVector = invertibleMatrixOutput.r[axisIndex] * XMVectorSet(-nextAxisElement, -nextAxisElement, -nextAxisElement, -nextAxisElement);
 
 					axisArray[nextAxisIndex] += mulVector;
@@ -814,7 +814,7 @@ HRESULT InvertMatrix(XMVECTOR zAxis, XMVECTOR yAxis, XMMATRIX* invertibleMatrix)
 			}
 		}
 	};
-	for (size_t i = 0; i <= 2; ++i) { // обход полседней строки обычной матрицы
+	for (size_t i = 0; i <= 2; ++i) { // РѕР±С…РѕРґ РїРѕР»СЃРµРґРЅРµР№ СЃС‚СЂРѕРєРё РѕР±С‹С‡РЅРѕР№ РјР°С‚СЂРёС†С‹
 		float axisElement = XMVectorGetByIndex(axisArray[2], i);
 		if (axisElement != 0) {
 			axisArray[2] /= XMVectorSet(axisElement, axisElement, axisElement, axisElement);
@@ -824,11 +824,11 @@ HRESULT InvertMatrix(XMVECTOR zAxis, XMVECTOR yAxis, XMMATRIX* invertibleMatrix)
 			break;
 		}
 	};
-	for (size_t axisIndex = 2; axisIndex >= 1; --axisIndex) { // обход вверх по строкам обычной матрицы
-		for (size_t i = 0; i <= 2; ++i) { // обход по координатам строки обычной матицы
+	for (size_t axisIndex = 2; axisIndex >= 1; --axisIndex) { // РѕР±С…РѕРґ РІРІРµСЂС… РїРѕ СЃС‚СЂРѕРєР°Рј РѕР±С‹С‡РЅРѕР№ РјР°С‚СЂРёС†С‹
+		for (size_t i = 0; i <= 2; ++i) { // РѕР±С…РѕРґ РїРѕ РєРѕРѕСЂРґРёРЅР°С‚Р°Рј СЃС‚СЂРѕРєРё РѕР±С‹С‡РЅРѕР№ РјР°С‚РёС†С‹
 			float axisElement = XMVectorGetByIndex(axisArray[axisIndex], i);
 			if (axisElement != 0) {
-				for (size_t nextAxisIndex = axisIndex - 1; nextAxisIndex < UINT_MAX; --nextAxisIndex) { // прибавление строки к другим строкам
+				for (size_t nextAxisIndex = axisIndex - 1; nextAxisIndex < UINT_MAX; --nextAxisIndex) { // РїСЂРёР±Р°РІР»РµРЅРёРµ СЃС‚СЂРѕРєРё Рє РґСЂСѓРіРёРј СЃС‚СЂРѕРєР°Рј
 					float nextAxisElement = XMVectorGetByIndex(axisArray[nextAxisIndex], i);
 					XMVECTOR mulVector = axisArray[axisIndex] * XMVectorSet(-nextAxisElement, -nextAxisElement, -nextAxisElement, -nextAxisElement);
 					XMVECTOR invertMatrixMulVector = invertibleMatrixOutput.r[axisIndex] * XMVectorSet(-nextAxisElement, -nextAxisElement, -nextAxisElement, -nextAxisElement);
@@ -841,7 +841,7 @@ HRESULT InvertMatrix(XMVECTOR zAxis, XMVECTOR yAxis, XMMATRIX* invertibleMatrix)
 		}
 	};
 
-	//преобразование обратной матрицы к правильному порядку строк
+	//РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹ Рє РїСЂР°РІРёР»СЊРЅРѕРјСѓ РїРѕСЂСЏРґРєСѓ СЃС‚СЂРѕРє
 	for (int i = 0; i <= 2; ++i) {
 		invertibleMatrix->r[invertibleMatrixRowsOrder[i]] = invertibleMatrixOutput.r[i];
 	};
@@ -854,7 +854,7 @@ HRESULT NewCoordinateSystemMatrix(XMVECTOR point, XMVECTOR zAxis, XMVECTOR yAxis
 	if (FAILED(InvertMatrix(zAxis, yAxis, invertibleMatrix))) {
 		return E_FAIL;
 	}
-	// при умножении вершины на матрицу перехода к новой системе координат вычитаем начало координат новой системы координат
+	// РїСЂРё СѓРјРЅРѕР¶РµРЅРёРё РІРµСЂС€РёРЅС‹ РЅР° РјР°С‚СЂРёС†Сѓ РїРµСЂРµС…РѕРґР° Рє РЅРѕРІРѕР№ СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚ РІС‹С‡РёС‚Р°РµРј РЅР°С‡Р°Р»Рѕ РєРѕРѕСЂРґРёРЅР°С‚ РЅРѕРІРѕР№ СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚
 	point *= XMVectorSet(-1.0f, -1.0f, -1.0f, 1.0f);
 	*invertibleMatrix = XMMatrixTranslationFromVector(point) * (*invertibleMatrix);
 
@@ -876,7 +876,7 @@ void InvertIndices(WORD* indicesArray, int size) {
 	}
 };
 
-XMVECTOR FindOrthogonalVector(XMVECTOR vector) { // скалярное произведение ортогональных векторов равно нулю, на использовании этого факта и строится поиск ортогонального вектора
+XMVECTOR FindOrthogonalVector(XMVECTOR vector) { // СЃРєР°Р»СЏСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ РѕСЂС‚РѕРіРѕРЅР°Р»СЊРЅС‹С… РІРµРєС‚РѕСЂРѕРІ СЂР°РІРЅРѕ РЅСѓР»СЋ, РЅР° РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё СЌС‚РѕРіРѕ С„Р°РєС‚Р° Рё СЃС‚СЂРѕРёС‚СЃСЏ РїРѕРёСЃРє РѕСЂС‚РѕРіРѕРЅР°Р»СЊРЅРѕРіРѕ РІРµРєС‚РѕСЂР°
 	XMFLOAT4 orthogonalVector;
 	int zeroElementOrNot[3];
 
@@ -914,7 +914,7 @@ XMVECTOR FindOrthogonalNormalizedVector(XMVECTOR vector) {
 	for (int i = 0; i < 3; ++i) {
 		float coordinate = XMVectorGetByIndex(vector, i);
 		if ((coordinate != 0.0f)) {
-			// если координата x не ноль
+			// РµСЃР»Рё РєРѕРѕСЂРґРёРЅР°С‚Р° x РЅРµ РЅРѕР»СЊ
 			if (i == 0) {
 				float zOfFirstVector = XMVectorGetByIndex(vector, 2);
 				orthogonalVector.z = coordinate / (sqrt(coordinate * coordinate + zOfFirstVector * zOfFirstVector));
@@ -923,7 +923,7 @@ XMVECTOR FindOrthogonalNormalizedVector(XMVECTOR vector) {
 				return XMVectorSet(orthogonalVector.x, 0.0f, orthogonalVector.z, 0.0f);
 			}
 
-			// если координата y не ноль
+			// РµСЃР»Рё РєРѕРѕСЂРґРёРЅР°С‚Р° y РЅРµ РЅРѕР»СЊ
 			if (i == 1) {
 				float zOfFirstVector = XMVectorGetByIndex(vector, 2);
 				orthogonalVector.z = coordinate / (sqrt(coordinate * coordinate + zOfFirstVector * zOfFirstVector));
@@ -932,7 +932,7 @@ XMVECTOR FindOrthogonalNormalizedVector(XMVECTOR vector) {
 				return XMVectorSet(0.0f, orthogonalVector.y, orthogonalVector.z, 0.0f);
 			}
 
-			// если координата z не ноль
+			// РµСЃР»Рё РєРѕРѕСЂРґРёРЅР°С‚Р° z РЅРµ РЅРѕР»СЊ
 			if (i == 2) {
 				float yOfFirstVector = XMVectorGetByIndex(vector, 1);
 				orthogonalVector.y = coordinate / (sqrt(coordinate * coordinate + yOfFirstVector * yOfFirstVector));
@@ -942,32 +942,32 @@ XMVECTOR FindOrthogonalNormalizedVector(XMVECTOR vector) {
 			}
 		}
 	}
-	// если дан нулевой вектор
+	// РµСЃР»Рё РґР°РЅ РЅСѓР»РµРІРѕР№ РІРµРєС‚РѕСЂ
 	return XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 };
 
 void RotationAroundAxis(XMVECTOR yAxis, XMVECTOR point, FLOAT angle, XMMATRIX* outputMatrix) {
 	yAxis = XMVector3Normalize(yAxis);
 	XMVECTOR zAxis = FindOrthogonalNormalizedVector(yAxis);
-	XMMATRIX offsetMatrix = XMMatrixTranslationFromVector(_mm_mul_ps(point, XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f))); // матрица переноса вершины, которая будет поворачиваться вокруг оси, на -point
-	XMMATRIX backOffsetMatrix = XMMatrixTranslationFromVector(point); // матрица переноса перенесенной вершины, которую уже повернули вокруг оси, на +point
+	XMMATRIX offsetMatrix = XMMatrixTranslationFromVector(_mm_mul_ps(point, XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f))); // РјР°С‚СЂРёС†Р° РїРµСЂРµРЅРѕСЃР° РІРµСЂС€РёРЅС‹, РєРѕС‚РѕСЂР°СЏ Р±СѓРґРµС‚ РїРѕРІРѕСЂР°С‡РёРІР°С‚СЊСЃСЏ РІРѕРєСЂСѓРі РѕСЃРё, РЅР° -point
+	XMMATRIX backOffsetMatrix = XMMatrixTranslationFromVector(point); // РјР°С‚СЂРёС†Р° РїРµСЂРµРЅРѕСЃР° РїРµСЂРµРЅРµСЃРµРЅРЅРѕР№ РІРµСЂС€РёРЅС‹, РєРѕС‚РѕСЂСѓСЋ СѓР¶Рµ РїРѕРІРµСЂРЅСѓР»Рё РІРѕРєСЂСѓРі РѕСЃРё, РЅР° +point
 
-	// переход координат вершины от координат в старом базисе к координатам в новом базисе, где заданная ось является осью Y
+	// РїРµСЂРµС…РѕРґ РєРѕРѕСЂРґРёРЅР°С‚ РІРµСЂС€РёРЅС‹ РѕС‚ РєРѕРѕСЂРґРёРЅР°С‚ РІ СЃС‚Р°СЂРѕРј Р±Р°Р·РёСЃРµ Рє РєРѕРѕСЂРґРёРЅР°С‚Р°Рј РІ РЅРѕРІРѕРј Р±Р°Р·РёСЃРµ, РіРґРµ Р·Р°РґР°РЅРЅР°СЏ РѕСЃСЊ СЏРІР»СЏРµС‚СЃСЏ РѕСЃСЊСЋ Y
 	XMMATRIX newCoordinates;
-	NewCoordinateSystemMatrix(g_XMZero, zAxis, yAxis, &newCoordinates); // вектор xAxis, который находится в этой функции будет нормализованным, так как вектор, полученный
-																	 // в результате векторного произведения нормализованных и ортогональных векторов тоже будет нормализованным  
+	NewCoordinateSystemMatrix(g_XMZero, zAxis, yAxis, &newCoordinates); // РІРµРєС‚РѕСЂ xAxis, РєРѕС‚РѕСЂС‹Р№ РЅР°С…РѕРґРёС‚СЃСЏ РІ СЌС‚РѕР№ С„СѓРЅРєС†РёРё Р±СѓРґРµС‚ РЅРѕСЂРјР°Р»РёР·РѕРІР°РЅРЅС‹Рј, С‚Р°Рє РєР°Рє РІРµРєС‚РѕСЂ, РїРѕР»СѓС‡РµРЅРЅС‹Р№
+																	 // РІ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РІРµРєС‚РѕСЂРЅРѕРіРѕ РїСЂРѕРёР·РІРµРґРµРЅРёСЏ РЅРѕСЂРјР°Р»РёР·РѕРІР°РЅРЅС‹С… Рё РѕСЂС‚РѕРіРѕРЅР°Р»СЊРЅС‹С… РІРµРєС‚РѕСЂРѕРІ С‚РѕР¶Рµ Р±СѓРґРµС‚ РЅРѕСЂРјР°Р»РёР·РѕРІР°РЅРЅС‹Рј  
 
-	// так как заданная ось является осью Y, то и вращение будет происходить вокруг оси Y
+	// С‚Р°Рє РєР°Рє Р·Р°РґР°РЅРЅР°СЏ РѕСЃСЊ СЏРІР»СЏРµС‚СЃСЏ РѕСЃСЊСЋ Y, С‚Рѕ Рё РІСЂР°С‰РµРЅРёРµ Р±СѓРґРµС‚ РїСЂРѕРёСЃС…РѕРґРёС‚СЊ РІРѕРєСЂСѓРі РѕСЃРё Y
 	XMMATRIX yAxisRotationMatrix = XMMatrixRotationY(angle);
 
-	// матрица возврата к старым координатам
+	// РјР°С‚СЂРёС†Р° РІРѕР·РІСЂР°С‚Р° Рє СЃС‚Р°СЂС‹Рј РєРѕРѕСЂРґРёРЅР°С‚Р°Рј
 	XMMATRIX transformationMatrix = {
 		XMVector3Cross(yAxis, zAxis),
 		yAxis,
 		zAxis,
 		g_XMIdentityR3 };
 
-	// можно перемножить все матрицы, так как перемножение матриц ассоциативно, и получить одну матрицу. Не придется в шейдере на каждую вершину делать несколько перемножений матриц. 
+	// РјРѕР¶РЅРѕ РїРµСЂРµРјРЅРѕР¶РёС‚СЊ РІСЃРµ РјР°С‚СЂРёС†С‹, С‚Р°Рє РєР°Рє РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ РјР°С‚СЂРёС† Р°СЃСЃРѕС†РёР°С‚РёРІРЅРѕ, Рё РїРѕР»СѓС‡РёС‚СЊ РѕРґРЅСѓ РјР°С‚СЂРёС†Сѓ. РќРµ РїСЂРёРґРµС‚СЃСЏ РІ С€РµР№РґРµСЂРµ РЅР° РєР°Р¶РґСѓСЋ РІРµСЂС€РёРЅСѓ РґРµР»Р°С‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ РїРµСЂРµРјРЅРѕР¶РµРЅРёР№ РјР°С‚СЂРёС†. 
 	*outputMatrix = offsetMatrix * newCoordinates * yAxisRotationMatrix * transformationMatrix * backOffsetMatrix; 
 }
 
@@ -979,7 +979,7 @@ void InitPageSizeAndAllocGranularityVariables() {
 }
 
 bool ChangesOfStaticHtBoxesArea() {
-	// если позиция камеры находится внутри текущей области статических хитбоксов
+	// РµСЃР»Рё РїРѕР·РёС†РёСЏ РєР°РјРµСЂС‹ РЅР°С…РѕРґРёС‚СЃСЏ РІРЅСѓС‚СЂРё С‚РµРєСѓС‰РµР№ РѕР±Р»Р°СЃС‚Рё СЃС‚Р°С‚РёС‡РµСЃРєРёС… С…РёС‚Р±РѕРєСЃРѕРІ
 	if ((currentCameraPos.x >= currentHitBoxArea->lowX) and
 		(currentCameraPos.x <= currentHitBoxArea->highX) and
 		(currentCameraPos.z >= currentHitBoxArea->lowZ) and
@@ -991,9 +991,9 @@ bool ChangesOfStaticHtBoxesArea() {
 };
 
 void DefineCurrentStaticHtBoxesArea() {
-	// так как нет корня в бинарном дереве, то приходится отдельно проверять в какой из двух первых(0 и 1) областей 
-	// находится камера
-	// если камера находится внутри нулевой области статических хитбоксов
+	// С‚Р°Рє РєР°Рє РЅРµС‚ РєРѕСЂРЅСЏ РІ Р±РёРЅР°СЂРЅРѕРј РґРµСЂРµРІРµ, С‚Рѕ РїСЂРёС…РѕРґРёС‚СЃСЏ РѕС‚РґРµР»СЊРЅРѕ РїСЂРѕРІРµСЂСЏС‚СЊ РІ РєР°РєРѕР№ РёР· РґРІСѓС… РїРµСЂРІС‹С…(0 Рё 1) РѕР±Р»Р°СЃС‚РµР№ 
+	// РЅР°С…РѕРґРёС‚СЃСЏ РєР°РјРµСЂР°
+	// РµСЃР»Рё РєР°РјРµСЂР° РЅР°С…РѕРґРёС‚СЃСЏ РІРЅСѓС‚СЂРё РЅСѓР»РµРІРѕР№ РѕР±Р»Р°СЃС‚Рё СЃС‚Р°С‚РёС‡РµСЃРєРёС… С…РёС‚Р±РѕРєСЃРѕРІ
 	if ((currentCameraPos.x >= StaticHitBoxAreaArray[0].lowX) and
 		(currentCameraPos.x <= StaticHitBoxAreaArray[0].highX) and
 		(currentCameraPos.z >= StaticHitBoxAreaArray[0].lowZ) and
@@ -1005,9 +1005,9 @@ void DefineCurrentStaticHtBoxesArea() {
 		currentHitBoxArea = &StaticHitBoxAreaArray[1];
 	}
 
-	// пока не дошли до листа продолжаем определять в какой области находится камера
+	// РїРѕРєР° РЅРµ РґРѕС€Р»Рё РґРѕ Р»РёСЃС‚Р° РїСЂРѕРґРѕР»Р¶Р°РµРј РѕРїСЂРµРґРµР»СЏС‚СЊ РІ РєР°РєРѕР№ РѕР±Р»Р°СЃС‚Рё РЅР°С…РѕРґРёС‚СЃСЏ РєР°РјРµСЂР°
 	while (currentHitBoxArea->leftNode != NULL) {
-		// если камера находится внутри нулевой области статических хитбоксов
+		// РµСЃР»Рё РєР°РјРµСЂР° РЅР°С…РѕРґРёС‚СЃСЏ РІРЅСѓС‚СЂРё РЅСѓР»РµРІРѕР№ РѕР±Р»Р°СЃС‚Рё СЃС‚Р°С‚РёС‡РµСЃРєРёС… С…РёС‚Р±РѕРєСЃРѕРІ
 		if ((currentCameraPos.x >= currentHitBoxArea->leftNode->lowX) and
 			(currentCameraPos.x <= currentHitBoxArea->leftNode->highX) and
 			(currentCameraPos.z >= currentHitBoxArea->leftNode->lowZ) and
@@ -1022,85 +1022,85 @@ void DefineCurrentStaticHtBoxesArea() {
 };
 
 void StaticHitBoxesCollisionDetection() {
-	// кладем текущую позицую камеры
+	// РєР»Р°РґРµРј С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†СѓСЋ РєР°РјРµСЂС‹
 	sseProxyRegister0 = XMLoadFloat3(&currentCameraPos);
 
-	// если позиция камеры оказалась внутри хитбокса(т.е. произошло столкновение), значит нужно камеру вытолкнуть за пределы хитбокса
-	// обходим все хибоксы из текущей области хитбоксов
+	// РµСЃР»Рё РїРѕР·РёС†РёСЏ РєР°РјРµСЂС‹ РѕРєР°Р·Р°Р»Р°СЃСЊ РІРЅСѓС‚СЂРё С…РёС‚Р±РѕРєСЃР°(С‚.Рµ. РїСЂРѕРёР·РѕС€Р»Рѕ СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ), Р·РЅР°С‡РёС‚ РЅСѓР¶РЅРѕ РєР°РјРµСЂСѓ РІС‹С‚РѕР»РєРЅСѓС‚СЊ Р·Р° РїСЂРµРґРµР»С‹ С…РёС‚Р±РѕРєСЃР°
+	// РѕР±С…РѕРґРёРј РІСЃРµ С…РёР±РѕРєСЃС‹ РёР· С‚РµРєСѓС‰РµР№ РѕР±Р»Р°СЃС‚Рё С…РёС‚Р±РѕРєСЃРѕРІ
 	for (int i = 0; i < currentHitBoxArea->staticHitBoxesAmount; ++i) { 
-		// смещаем и поворачиваем текущую позиция камеры
+		// СЃРјРµС‰Р°РµРј Рё РїРѕРІРѕСЂР°С‡РёРІР°РµРј С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЏ РєР°РјРµСЂС‹
 		sseProxyRegister0 = XMVector3Transform(sseProxyRegister0, *(currentHitBoxArea->staticHitBoxesArray[i]->angleMatrixRotation));
 		
-		// кладем ширину высоту длину хитбокса
+		// РєР»Р°РґРµРј С€РёСЂРёРЅСѓ РІС‹СЃРѕС‚Сѓ РґР»РёРЅСѓ С…РёС‚Р±РѕРєСЃР°
 		sseProxyRegister1 = XMLoadFloat3(&currentHitBoxArea->staticHitBoxesArray[i]->widthHeightLength);
-		// если 0 <= x <= width && 0 <= y <= height && 0 <= z <= length, где xyz принадлежат текущей позиции камеры, а width height length - хитбоксу
-		// то есть если позиция камеры внутри хитбокса
+		// РµСЃР»Рё 0 <= x <= width && 0 <= y <= height && 0 <= z <= length, РіРґРµ xyz РїСЂРёРЅР°РґР»РµР¶Р°С‚ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё РєР°РјРµСЂС‹, Р° width height length - С…РёС‚Р±РѕРєСЃСѓ
+		// С‚Рѕ РµСЃС‚СЊ РµСЃР»Рё РїРѕР·РёС†РёСЏ РєР°РјРµСЂС‹ РІРЅСѓС‚СЂРё С…РёС‚Р±РѕРєСЃР°
 		if (XMVector3LessOrEqual(sseProxyRegister0, sseProxyRegister1) and
 			XMVector3GreaterOrEqual(sseProxyRegister0, g_XMIdentityR3))
 		{
-			// находим расстояние позиции камеры до правых верхних граней хитбокса
+			// РЅР°С…РѕРґРёРј СЂР°СЃСЃС‚РѕСЏРЅРёРµ РїРѕР·РёС†РёРё РєР°РјРµСЂС‹ РґРѕ РїСЂР°РІС‹С… РІРµСЂС…РЅРёС… РіСЂР°РЅРµР№ С…РёС‚Р±РѕРєСЃР°
 			sseProxyRegister1 = sseProxyRegister1 - sseProxyRegister0;
 
-			// находим минимум между расстоянием позиции камеры до нижних левых граней хитбокса(это координаты позиции камеры) и 
-			// расстоянием позици камеры до верхних правых граней хитбокса
+			// РЅР°С…РѕРґРёРј РјРёРЅРёРјСѓРј РјРµР¶РґСѓ СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РїРѕР·РёС†РёРё РєР°РјРµСЂС‹ РґРѕ РЅРёР¶РЅРёС… Р»РµРІС‹С… РіСЂР°РЅРµР№ С…РёС‚Р±РѕРєСЃР°(СЌС‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚С‹ РїРѕР·РёС†РёРё РєР°РјРµСЂС‹) Рё 
+			// СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РїРѕР·РёС†Рё РєР°РјРµСЂС‹ РґРѕ РІРµСЂС…РЅРёС… РїСЂР°РІС‹С… РіСЂР°РЅРµР№ С…РёС‚Р±РѕРєСЃР°
 			sseProxyRegister2 = XMVectorMin(sseProxyRegister0, sseProxyRegister1);
 
 			float minX = XMVectorGetX(sseProxyRegister2);
 			float minZ = XMVectorGetZ(sseProxyRegister2);
 
-			// если минимальное расстояние до граней находится по оси X
+			// РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РіСЂР°РЅРµР№ РЅР°С…РѕРґРёС‚СЃСЏ РїРѕ РѕСЃРё X
 			if (minX < minZ) {
-				//если минимальное расстояние явлется минимальным расстоянием от точки до левой грани хитбокса
+				//РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ СЏРІР»РµС‚СЃСЏ РјРёРЅРёРјР°Р»СЊРЅС‹Рј СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РѕС‚ С‚РѕС‡РєРё РґРѕ Р»РµРІРѕР№ РіСЂР°РЅРё С…РёС‚Р±РѕРєСЃР°
 				if (minX == XMVectorGetX(sseProxyRegister0)) {
-					sseProxyRegister0 = XMVectorSetX(sseProxyRegister0, -0.005f); // 0.0005 это расстояние на которое отодвигается камера от грани хитбокса
+					sseProxyRegister0 = XMVectorSetX(sseProxyRegister0, -0.005f); // 0.0005 СЌС‚Рѕ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РЅР° РєРѕС‚РѕСЂРѕРµ РѕС‚РѕРґРІРёРіР°РµС‚СЃСЏ РєР°РјРµСЂР° РѕС‚ РіСЂР°РЅРё С…РёС‚Р±РѕРєСЃР°
 				} 
-				else { //если минимальное расстояние явлется минимальным расстоянием от точки до правой грани хитбокса
+				else { //РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ СЏРІР»РµС‚СЃСЏ РјРёРЅРёРјР°Р»СЊРЅС‹Рј СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РѕС‚ С‚РѕС‡РєРё РґРѕ РїСЂР°РІРѕР№ РіСЂР°РЅРё С…РёС‚Р±РѕРєСЃР°
 					sseProxyRegister1 = XMVectorSetX(sseProxyRegister1, 0.005f);
 					sseProxyRegister2 += sseProxyRegister1;
 					sseProxyRegister0 += XMVectorAndInt(sseProxyRegister2, g_XMMaskX);
 				}
 			}
-			else {// если минимальное расстояние до граней находится по оси Z
-				//если минимальное расстояние явлется минимальным расстоянием от точки до нижней грани хитбокса
+			else {// РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РіСЂР°РЅРµР№ РЅР°С…РѕРґРёС‚СЃСЏ РїРѕ РѕСЃРё Z
+				//РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ СЏРІР»РµС‚СЃСЏ РјРёРЅРёРјР°Р»СЊРЅС‹Рј СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РѕС‚ С‚РѕС‡РєРё РґРѕ РЅРёР¶РЅРµР№ РіСЂР°РЅРё С…РёС‚Р±РѕРєСЃР°
 				if (minZ == XMVectorGetZ(sseProxyRegister0)) {
 					sseProxyRegister0 = XMVectorSetZ(sseProxyRegister0, -0.005f);
 				}
-				else { //если минимальное расстояние явлется минимальным расстоянием от точки до верхней грани хитбокса
+				else { //РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ СЏРІР»РµС‚СЃСЏ РјРёРЅРёРјР°Р»СЊРЅС‹Рј СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РѕС‚ С‚РѕС‡РєРё РґРѕ РІРµСЂС…РЅРµР№ РіСЂР°РЅРё С…РёС‚Р±РѕРєСЃР°
 					sseProxyRegister1 = XMVectorSetZ(sseProxyRegister1, 0.005f);
 					sseProxyRegister2 += sseProxyRegister1;
 					sseProxyRegister0 += XMVectorAndInt(sseProxyRegister2, g_XMMaskZ);
 				}
 			}
-			// умножить на обратную матрицу
+			// СѓРјРЅРѕР¶РёС‚СЊ РЅР° РѕР±СЂР°С‚РЅСѓСЋ РјР°С‚СЂРёС†Сѓ
 			sseProxyRegister0 = XMVector3Transform(sseProxyRegister0, *(currentHitBoxArea->staticHitBoxesArray[i]->invertAngleMatrixRotation));
-			// сохранить измененную позицию в currentCameraPosition
+			// СЃРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРЅСѓСЋ РїРѕР·РёС†РёСЋ РІ currentCameraPosition
 			XMStoreFloat3(&currentCameraPos, sseProxyRegister0);
 
-			//меняем view matrix, так чтобы она описывала систему координат в новой, смещенной точке
-			//находим координаты новой позиции в текущей системе координат камеры
+			//РјРµРЅСЏРµРј view matrix, С‚Р°Рє С‡С‚РѕР±С‹ РѕРЅР° РѕРїРёСЃС‹РІР°Р»Р° СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚ РІ РЅРѕРІРѕР№, СЃРјРµС‰РµРЅРЅРѕР№ С‚РѕС‡РєРµ
+			//РЅР°С…РѕРґРёРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РЅРѕРІРѕР№ РїРѕР·РёС†РёРё РІ С‚РµРєСѓС‰РµР№ СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚ РєР°РјРµСЂС‹
 			sseProxyRegister0 = XMVector3Transform(sseProxyRegister0, matricesWVP.mView);
-			//переносим систему координат камеры в новую точку
+			//РїРµСЂРµРЅРѕСЃРёРј СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚ РєР°РјРµСЂС‹ РІ РЅРѕРІСѓСЋ С‚РѕС‡РєСѓ
 			matricesWVP.mView.r[3] -= sseProxyRegister0;
 		}
 	}
 };
 
 void InitHitBoxes() {
-	// предположим, что размер страницы всегда является степенью двойки
-	// тогда кол-во страниц, необходимое для того чтобы вместить все хитбоксы, можно вычислить так:
+	// РїСЂРµРґРїРѕР»РѕР¶РёРј, С‡С‚Рѕ СЂР°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹ РІСЃРµРіРґР° СЏРІР»СЏРµС‚СЃСЏ СЃС‚РµРїРµРЅСЊСЋ РґРІРѕР№РєРё
+	// С‚РѕРіРґР° РєРѕР»-РІРѕ СЃС‚СЂР°РЅРёС†, РЅРµРѕР±С…РѕРґРёРјРѕРµ РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ РІРјРµСЃС‚РёС‚СЊ РІСЃРµ С…РёС‚Р±РѕРєСЃС‹, РјРѕР¶РЅРѕ РІС‹С‡РёСЃР»РёС‚СЊ С‚Р°Рє:
 
-	//определяем есть ли выравнивание по 4 байта у гранулярности выделения памяти
-	// остаток от деления гранулярности на 4 байта
+	//РѕРїСЂРµРґРµР»СЏРµРј РµСЃС‚СЊ Р»Рё РІС‹СЂР°РІРЅРёРІР°РЅРёРµ РїРѕ 4 Р±Р°Р№С‚Р° Сѓ РіСЂР°РЅСѓР»СЏСЂРЅРѕСЃС‚Рё РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё
+	// РѕСЃС‚Р°С‚РѕРє РѕС‚ РґРµР»РµРЅРёСЏ РіСЂР°РЅСѓР»СЏСЂРЅРѕСЃС‚Рё РЅР° 4 Р±Р°Р№С‚Р°
 	DWORD allocationGranularityAlignModulo = allocationGranularity & (4UL - 1UL);
-	// дополнительные байты чтобы адрес выделенной памяти был выровнен
+	// РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ Р±Р°Р№С‚С‹ С‡С‚РѕР±С‹ Р°РґСЂРµСЃ РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё Р±С‹Р» РІС‹СЂРѕРІРЅРµРЅ
 	SIZE_T extraBytes = 0;
 
-	if (allocationGranularityAlignModulo != 0UL) { // если адрес выделяемой памяти невыровнен 
+	if (allocationGranularityAlignModulo != 0UL) { // РµСЃР»Рё Р°РґСЂРµСЃ РІС‹РґРµР»СЏРµРјРѕР№ РїР°РјСЏС‚Рё РЅРµРІС‹СЂРѕРІРЅРµРЅ 
 		extraBytes += (4UL - allocationGranularityAlignModulo);
 	}
-	// p.s. хотя наверно в windows всегда гранулярность выделения памяти через virtualalloc будет кратна 4 байтам
+	// p.s. С…РѕС‚СЏ РЅР°РІРµСЂРЅРѕ РІ windows РІСЃРµРіРґР° РіСЂР°РЅСѓР»СЏСЂРЅРѕСЃС‚СЊ РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё С‡РµСЂРµР· virtualalloc Р±СѓРґРµС‚ РєСЂР°С‚РЅР° 4 Р±Р°Р№С‚Р°Рј
 
-	// размер памяти, занимаемы хитбоксами
+	// СЂР°Р·РјРµСЂ РїР°РјСЏС‚Рё, Р·Р°РЅРёРјР°РµРјС‹ С…РёС‚Р±РѕРєСЃР°РјРё
 	SIZE_T hitBoxAmount = sizeof(extraBytes +
 		STATIC_HIT_BOX_AMOUNT * sizeof(HitBox) +
 		STATIC_HIT_BOX_AREA_AMOUNT * sizeof(StaticHitBoxArea) +
@@ -1110,37 +1110,37 @@ void InitHitBoxes() {
 		STATIC_HIT_BOX_AMOUNT_IN_STATIC_HIT_BOX_AREA_LEAF_3 * sizeof(HitBox*) +
 		DYNAMIC_HIT_BOX_AMOUNT * sizeof(DynamicHitBox));
 
-	// количество страниц, необходимое для того чтобы вместить все хитбоксы
-	pageAmount = hitBoxAmount & (0xFFFFFFFF ^ (pageSize - 1)); // сейчас здесь хранится только целая часть от деления hitBoxAmount на pageSize
+	// РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂР°РЅРёС†, РЅРµРѕР±С…РѕРґРёРјРѕРµ РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ РІРјРµСЃС‚РёС‚СЊ РІСЃРµ С…РёС‚Р±РѕРєСЃС‹
+	pageAmount = hitBoxAmount & (0xFFFFFFFF ^ (pageSize - 1)); // СЃРµР№С‡Р°СЃ Р·РґРµСЃСЊ С…СЂР°РЅРёС‚СЃСЏ С‚РѕР»СЊРєРѕ С†РµР»Р°СЏ С‡Р°СЃС‚СЊ РѕС‚ РґРµР»РµРЅРёСЏ hitBoxAmount РЅР° pageSize
 	//SIZE_T moduloPart = hitBoxAmount & (pageSize - 1);
 	//SIZE_T integerPart = hitBoxAmount & (0xFFFFFFFF ^ (pageSize - 1));
 
-	// если остаток от деления hitBoxAmount на pageSize не ноль
+	// РµСЃР»Рё РѕСЃС‚Р°С‚РѕРє РѕС‚ РґРµР»РµРЅРёСЏ hitBoxAmount РЅР° pageSize РЅРµ РЅРѕР»СЊ
 	if ((hitBoxAmount & (pageSize - 1UL)) != 0UL) {
 		++pageAmount;
 	}
-	// p.s. конечно легче и понятнее было бы посчитать количество занимаемх страниц памяти с помощью div и mod
+	// p.s. РєРѕРЅРµС‡РЅРѕ Р»РµРіС‡Рµ Рё РїРѕРЅСЏС‚РЅРµРµ Р±С‹Р»Рѕ Р±С‹ РїРѕСЃС‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РЅРёРјР°РµРјС… СЃС‚СЂР°РЅРёС† РїР°РјСЏС‚Рё СЃ РїРѕРјРѕС‰СЊСЋ div Рё mod
 
-	// выделение памяти под хитбоксы
-	// сырая память с учетом байтов для выравнивания
+	// РІС‹РґРµР»РµРЅРёРµ РїР°РјСЏС‚Рё РїРѕРґ С…РёС‚Р±РѕРєСЃС‹
+	// СЃС‹СЂР°СЏ РїР°РјСЏС‚СЊ СЃ СѓС‡РµС‚РѕРј Р±Р°Р№С‚РѕРІ РґР»СЏ РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ
 	dynamicMemory = VirtualAlloc(NULL, pageAmount * pageSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
-	// указатель на массив статических хитбоксов, выровненный по границе 4 байта
+	// СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјР°СЃСЃРёРІ СЃС‚Р°С‚РёС‡РµСЃРєРёС… С…РёС‚Р±РѕРєСЃРѕРІ, РІС‹СЂРѕРІРЅРµРЅРЅС‹Р№ РїРѕ РіСЂР°РЅРёС†Рµ 4 Р±Р°Р№С‚Р°
 	StaticHitBoxArray = (HitBox*)((BYTE*)dynamicMemory + extraBytes);
-	// указатель на массив StaticHitBoxArea структур
+	// СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјР°СЃСЃРёРІ StaticHitBoxArea СЃС‚СЂСѓРєС‚СѓСЂ
 	StaticHitBoxAreaArray = (StaticHitBoxArea*)(StaticHitBoxArray + STATIC_HIT_BOX_AMOUNT);
-	// указатели на массивы позиций в StaticHitBoxDescArray, которые определяют какие статические хитбоксы есть в листьях staticHitBoxArea
-	// 0 лист
+	// СѓРєР°Р·Р°С‚РµР»Рё РЅР° РјР°СЃСЃРёРІС‹ РїРѕР·РёС†РёР№ РІ StaticHitBoxDescArray, РєРѕС‚РѕСЂС‹Рµ РѕРїСЂРµРґРµР»СЏСЋС‚ РєР°РєРёРµ СЃС‚Р°С‚РёС‡РµСЃРєРёРµ С…РёС‚Р±РѕРєСЃС‹ РµСЃС‚СЊ РІ Р»РёСЃС‚СЊСЏС… staticHitBoxArea
+	// 0 Р»РёСЃС‚
 	Leaf0Array = (HitBox**)(StaticHitBoxAreaArray + STATIC_HIT_BOX_AREA_AMOUNT);
-	// 1 лист
+	// 1 Р»РёСЃС‚
 	Leaf1Array = Leaf0Array + STATIC_HIT_BOX_AMOUNT_IN_STATIC_HIT_BOX_AREA_LEAF_0;
-	// 2 лист
+	// 2 Р»РёСЃС‚
 	Leaf2Array = Leaf1Array + STATIC_HIT_BOX_AMOUNT_IN_STATIC_HIT_BOX_AREA_LEAF_1;
-	// 3 лист
+	// 3 Р»РёСЃС‚
 	Leaf3Array = Leaf2Array + STATIC_HIT_BOX_AMOUNT_IN_STATIC_HIT_BOX_AREA_LEAF_2;
 
-	// кладем данные в массивы статических хитбоксов
-	// 0 хитбокс
+	// РєР»Р°РґРµРј РґР°РЅРЅС‹Рµ РІ РјР°СЃСЃРёРІС‹ СЃС‚Р°С‚РёС‡РµСЃРєРёС… С…РёС‚Р±РѕРєСЃРѕРІ
+	// 0 С…РёС‚Р±РѕРєСЃ
 	StaticHitBoxArray[0] = {
 		0.0f,
 		55.0f,
@@ -1148,7 +1148,7 @@ void InitHitBoxes() {
 		&staticHitBoxesRotationMatricesArray[0],
 		&invertStaticHitBoxesRotationMatricesArray[0]
 	};
-	// 1 хитбокс
+	// 1 С…РёС‚Р±РѕРєСЃ
 	StaticHitBoxArray[1] = {
 		55.0f,
 		0.0f,
@@ -1156,7 +1156,7 @@ void InitHitBoxes() {
 		&staticHitBoxesRotationMatricesArray[1],
 		&invertStaticHitBoxesRotationMatricesArray[1]
 	};
-	// 2 хитбокс
+	// 2 С…РёС‚Р±РѕРєСЃ
 	StaticHitBoxArray[2] = {
 		0.0f,
 		-55.0f,
@@ -1164,7 +1164,7 @@ void InitHitBoxes() {
 		&staticHitBoxesRotationMatricesArray[2],
 		&invertStaticHitBoxesRotationMatricesArray[2]
 	};
-	// 3 хитбокс
+	// 3 С…РёС‚Р±РѕРєСЃ
 	StaticHitBoxArray[3] = {
 		-55.0f,
 		0.0f,
@@ -1173,22 +1173,22 @@ void InitHitBoxes() {
 		&invertStaticHitBoxesRotationMatricesArray[3]
 	};
 
-	// заполняем массивы листьев зон статических хитбоксов
-	// массив 0 листа
+	// Р·Р°РїРѕР»РЅСЏРµРј РјР°СЃСЃРёРІС‹ Р»РёСЃС‚СЊРµРІ Р·РѕРЅ СЃС‚Р°С‚РёС‡РµСЃРєРёС… С…РёС‚Р±РѕРєСЃРѕРІ
+	// РјР°СЃСЃРёРІ 0 Р»РёСЃС‚Р°
 	Leaf0Array[0] = &StaticHitBoxArray[0];
 	Leaf0Array[1] = &StaticHitBoxArray[3];
-	// массив 1 листа
+	// РјР°СЃСЃРёРІ 1 Р»РёСЃС‚Р°
 	Leaf1Array[0] = &StaticHitBoxArray[0];
 	Leaf1Array[1] = &StaticHitBoxArray[1];
-	// массив 2 листа
+	// РјР°СЃСЃРёРІ 2 Р»РёСЃС‚Р°
 	Leaf2Array[0] = &StaticHitBoxArray[2];
 	Leaf2Array[1] = &StaticHitBoxArray[3];
-	// массив 3 листа
+	// РјР°СЃСЃРёРІ 3 Р»РёСЃС‚Р°
 	Leaf3Array[0] = &StaticHitBoxArray[1];
 	Leaf3Array[1] = &StaticHitBoxArray[2];
 
-	// кладем данные в массив областей статических хитбоксов
-	// 0 область
+	// РєР»Р°РґРµРј РґР°РЅРЅС‹Рµ РІ РјР°СЃСЃРёРІ РѕР±Р»Р°СЃС‚РµР№ СЃС‚Р°С‚РёС‡РµСЃРєРёС… С…РёС‚Р±РѕРєСЃРѕРІ
+	// 0 РѕР±Р»Р°СЃС‚СЊ
 	StaticHitBoxAreaArray[0] = {
 		&StaticHitBoxAreaArray[2],
 		&StaticHitBoxAreaArray[3],
@@ -1202,7 +1202,7 @@ void InitHitBoxes() {
 		2,
 		0
 	};
-	// 1 область
+	// 1 РѕР±Р»Р°СЃС‚СЊ
 	StaticHitBoxAreaArray[1] = {
 		&StaticHitBoxAreaArray[4],
 		&StaticHitBoxAreaArray[5],
@@ -1216,7 +1216,7 @@ void InitHitBoxes() {
 		2,
 		1
 	};
-	// 2 область
+	// 2 РѕР±Р»Р°СЃС‚СЊ
 	StaticHitBoxAreaArray[2] = {
 		NULL,
 		(StaticHitBoxArea*)Leaf0Array,
@@ -1230,7 +1230,7 @@ void InitHitBoxes() {
 		2,
 		0
 	};
-	// 3 область
+	// 3 РѕР±Р»Р°СЃС‚СЊ
 	StaticHitBoxAreaArray[3] = {
 		NULL,
 		(StaticHitBoxArea*)Leaf1Array,
@@ -1244,7 +1244,7 @@ void InitHitBoxes() {
 		2,
 		1
 	};
-	// 4 область
+	// 4 РѕР±Р»Р°СЃС‚СЊ
 	StaticHitBoxAreaArray[4] = {
 		NULL,
 		(StaticHitBoxArea*)Leaf2Array,
@@ -1258,7 +1258,7 @@ void InitHitBoxes() {
 		2,
 		0
 	};
-	// 5 область
+	// 5 РѕР±Р»Р°СЃС‚СЊ
 	StaticHitBoxAreaArray[5] = {
 		NULL,
 		(StaticHitBoxArea*)Leaf3Array,
@@ -1273,10 +1273,10 @@ void InitHitBoxes() {
 		1
 	};
     
-	// указатель на массив динмических хитбоксов
+	// СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјР°СЃСЃРёРІ РґРёРЅРјРёС‡РµСЃРєРёС… С…РёС‚Р±РѕРєСЃРѕРІ
     DynamicHitBoxesArray = (DynamicHitBox*)(Leaf3Array + STATIC_HIT_BOX_AMOUNT_IN_STATIC_HIT_BOX_AREA_LEAF_3);
     
-	//0 динмический хибокс
+	//0 РґРёРЅРјРёС‡РµСЃРєРёР№ С…РёР±РѕРєСЃ
     DynamicHitBoxesArray[0] = {
         3.0f,
         {-25.0f, 0.0f, 25.0f},
@@ -1286,7 +1286,7 @@ void InitHitBoxes() {
 		0.0f,
 		{-25.0f, 0.0f, 25.0f}
     };
-	//1 динмический хибокс
+	//1 РґРёРЅРјРёС‡РµСЃРєРёР№ С…РёР±РѕРєСЃ
      DynamicHitBoxesArray[1] = {
         3.0f,
         {25.0f, 0.0f, 25.0f},
@@ -1296,7 +1296,7 @@ void InitHitBoxes() {
 		0.0f,
 		{25.0f, 0.0f, 25.0f}
     };
-	 //2 динмический хибокс
+	 //2 РґРёРЅРјРёС‡РµСЃРєРёР№ С…РёР±РѕРєСЃ
      DynamicHitBoxesArray[2] = {
         3.0f,
         {0.0f, 0.0f, -25.0f},
@@ -1307,17 +1307,17 @@ void InitHitBoxes() {
 		{0.0f, 0.0f, -25.0f}
     };
 
-	 //инициализация векторов движения динамических хитбоксов
+	 //РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РІРµРєС‚РѕСЂРѕРІ РґРІРёР¶РµРЅРёСЏ РґРёРЅР°РјРёС‡РµСЃРєРёС… С…РёС‚Р±РѕРєСЃРѕРІ
 	 InitMoveVectorsAndActiveCyclesAmountForDynamicHitBoxes();
 };
 
 inline void __vectorcall MoveAndRotationDynamicHitBox(FXMVECTOR moveVector, float rotationAngle, DynamicHitBox* dynamicHitBox) {
-	// перемещаем хитбокс
+	// РїРµСЂРµРјРµС‰Р°РµРј С…РёС‚Р±РѕРєСЃ
 	sseProxyRegister0 = XMLoadFloat3(&(dynamicHitBox->position));
 	sseProxyRegister0 += moveVector;
 	XMStoreFloat3(&(dynamicHitBox->position), sseProxyRegister0);
 
-	// изменяем угол
+	// РёР·РјРµРЅСЏРµРј СѓРіРѕР»
 	if(dynamicHitBox->angle >= XM_2PI){
 		dynamicHitBox->angle += -XM_2PI + rotationAngle;
 	}
@@ -1325,86 +1325,86 @@ inline void __vectorcall MoveAndRotationDynamicHitBox(FXMVECTOR moveVector, floa
 };
 
 void DynamicHitBoxesCollisionDetection() {
-	// текущаяя позиция камеры
+	// С‚РµРєСѓС‰Р°СЏСЏ РїРѕР·РёС†РёСЏ РєР°РјРµСЂС‹
 	sseProxyRegister0 = XMLoadFloat3(&currentCameraPos);
 
-	// обходим все динамические хитбоксы
+	// РѕР±С…РѕРґРёРј РІСЃРµ РґРёРЅР°РјРёС‡РµСЃРєРёРµ С…РёС‚Р±РѕРєСЃС‹
 	for (int i = 0; i < DYNAMIC_HIT_BOX_AMOUNT; ++i) {
-		// позиция хитбокса
+		// РїРѕР·РёС†РёСЏ С…РёС‚Р±РѕРєСЃР°
 		sseProxyRegister4 = XMLoadFloat3(&DynamicHitBoxesArray[i].position);
-		// координаты камеры относительно системы координат в центре хитбокса
+		// РєРѕРѕСЂРґРёРЅР°С‚С‹ РєР°РјРµСЂС‹ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚ РІ С†РµРЅС‚СЂРµ С…РёС‚Р±РѕРєСЃР°
 		sseProxyRegister1 = sseProxyRegister0 - sseProxyRegister4;
-		// положительные границы обертки динмаического хитбокса
+		// РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Рµ РіСЂР°РЅРёС†С‹ РѕР±РµСЂС‚РєРё РґРёРЅРјР°РёС‡РµСЃРєРѕРіРѕ С…РёС‚Р±РѕРєСЃР°
 		sseProxyRegister2 = XMVectorSet(DynamicHitBoxesArray[i].halfOfShellEdge, 0.0f, DynamicHitBoxesArray[i].halfOfShellEdge, 0.0f);
-		// отрицательные границы обертки хитбокса
+		// РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рµ РіСЂР°РЅРёС†С‹ РѕР±РµСЂС‚РєРё С…РёС‚Р±РѕРєСЃР°
 		sseProxyRegister3 = XMVectorNegate(sseProxyRegister2);
 
-		// если камера находится внутри обертки хитбокса
+		// РµСЃР»Рё РєР°РјРµСЂР° РЅР°С…РѕРґРёС‚СЃСЏ РІРЅСѓС‚СЂРё РѕР±РµСЂС‚РєРё С…РёС‚Р±РѕРєСЃР°
 		if (XMVector3LessOrEqual(sseProxyRegister1, sseProxyRegister2) and
 			XMVector3GreaterOrEqual(sseProxyRegister1, sseProxyRegister3)) 
 		{
-			// поворот позиции камеры
+			// РїРѕРІРѕСЂРѕС‚ РїРѕР·РёС†РёРё РєР°РјРµСЂС‹
 			sseProxyRegister0_Matrix = XMMatrixRotationY(-DynamicHitBoxesArray[i].angle);
 			sseProxyRegister1 = XMVector3Transform(sseProxyRegister1, sseProxyRegister0_Matrix);
-			// координаты позиции камеры относительно системы координат, находящейся в левом нижнем углу хитбокса
+			// РєРѕРѕСЂРґРёРЅР°С‚С‹ РїРѕР·РёС†РёРё РєР°РјРµСЂС‹ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚, РЅР°С…РѕРґСЏС‰РµР№СЃСЏ РІ Р»РµРІРѕРј РЅРёР¶РЅРµРј СѓРіР»Сѓ С…РёС‚Р±РѕРєСЃР°
 			sseProxyRegister2 = XMLoadFloat3(&DynamicHitBoxesArray[i].halvesOfWidthHeightLength);
 			sseProxyRegister1 += sseProxyRegister2;
-			// кладем ширину высоту длину хитбокса
+			// РєР»Р°РґРµРј С€РёСЂРёРЅСѓ РІС‹СЃРѕС‚Сѓ РґР»РёРЅСѓ С…РёС‚Р±РѕРєСЃР°
 			sseProxyRegister2 *= 2.0f;
 
-			// если камера находится в хитбоксе
+			// РµСЃР»Рё РєР°РјРµСЂР° РЅР°С…РѕРґРёС‚СЃСЏ РІ С…РёС‚Р±РѕРєСЃРµ
 			if (XMVector3LessOrEqual(sseProxyRegister1, sseProxyRegister2) and
 				XMVector3GreaterOrEqual(sseProxyRegister1, g_XMIdentityR3))
 			{
-				// находим расстояние позиции камеры до правых верхних граней хитбокса
+				// РЅР°С…РѕРґРёРј СЂР°СЃСЃС‚РѕСЏРЅРёРµ РїРѕР·РёС†РёРё РєР°РјРµСЂС‹ РґРѕ РїСЂР°РІС‹С… РІРµСЂС…РЅРёС… РіСЂР°РЅРµР№ С…РёС‚Р±РѕРєСЃР°
 				sseProxyRegister2 = sseProxyRegister2 - sseProxyRegister1;
 
-				// находим минимум между расстоянием позиции камеры до нижних левых граней хитбокса(это координаты позиции камеры) и 
-				// расстоянием позици камеры до верхних правых граней хитбокса
+				// РЅР°С…РѕРґРёРј РјРёРЅРёРјСѓРј РјРµР¶РґСѓ СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РїРѕР·РёС†РёРё РєР°РјРµСЂС‹ РґРѕ РЅРёР¶РЅРёС… Р»РµРІС‹С… РіСЂР°РЅРµР№ С…РёС‚Р±РѕРєСЃР°(СЌС‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚С‹ РїРѕР·РёС†РёРё РєР°РјРµСЂС‹) Рё 
+				// СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РїРѕР·РёС†Рё РєР°РјРµСЂС‹ РґРѕ РІРµСЂС…РЅРёС… РїСЂР°РІС‹С… РіСЂР°РЅРµР№ С…РёС‚Р±РѕРєСЃР°
 				sseProxyRegister3 = XMVectorMin(sseProxyRegister1, sseProxyRegister2);
 
 				float minX = XMVectorGetX(sseProxyRegister3);
 				float minZ = XMVectorGetZ(sseProxyRegister3);
 
-				// если минимальное расстояние до граней находится по оси X
+				// РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РіСЂР°РЅРµР№ РЅР°С…РѕРґРёС‚СЃСЏ РїРѕ РѕСЃРё X
 				if (minX < minZ) {
-					//если минимальное расстояние явлется минимальным расстоянием от точки до левой грани хитбокса
+					//РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ СЏРІР»РµС‚СЃСЏ РјРёРЅРёРјР°Р»СЊРЅС‹Рј СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РѕС‚ С‚РѕС‡РєРё РґРѕ Р»РµРІРѕР№ РіСЂР°РЅРё С…РёС‚Р±РѕРєСЃР°
 					if (minX == XMVectorGetX(sseProxyRegister1)) {
-						sseProxyRegister1 = XMVectorSetX(sseProxyRegister1, -0.05f); // 0.0005 это расстояние на которое отодвигается камера от грани хитбокса
+						sseProxyRegister1 = XMVectorSetX(sseProxyRegister1, -0.05f); // 0.0005 СЌС‚Рѕ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РЅР° РєРѕС‚РѕСЂРѕРµ РѕС‚РѕРґРІРёРіР°РµС‚СЃСЏ РєР°РјРµСЂР° РѕС‚ РіСЂР°РЅРё С…РёС‚Р±РѕРєСЃР°
 					}
-					else { //если минимальное расстояние явлется минимальным расстоянием от точки до правой грани хитбокса
+					else { //РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ СЏРІР»РµС‚СЃСЏ РјРёРЅРёРјР°Р»СЊРЅС‹Рј СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РѕС‚ С‚РѕС‡РєРё РґРѕ РїСЂР°РІРѕР№ РіСЂР°РЅРё С…РёС‚Р±РѕРєСЃР°
 						sseProxyRegister2 = XMVectorSetX(sseProxyRegister2, 0.05f);
 						sseProxyRegister3 += sseProxyRegister2;
 						sseProxyRegister1 += XMVectorAndInt(sseProxyRegister3, g_XMMaskX);
 					}
 				}
-				else {// если минимальное расстояние до граней находится по оси Z
-					//если минимальное расстояние явлется минимальным расстоянием от точки до нижней грани хитбокса
+				else {// РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РіСЂР°РЅРµР№ РЅР°С…РѕРґРёС‚СЃСЏ РїРѕ РѕСЃРё Z
+					//РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ СЏРІР»РµС‚СЃСЏ РјРёРЅРёРјР°Р»СЊРЅС‹Рј СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РѕС‚ С‚РѕС‡РєРё РґРѕ РЅРёР¶РЅРµР№ РіСЂР°РЅРё С…РёС‚Р±РѕРєСЃР°
 					if (minZ == XMVectorGetZ(sseProxyRegister1)) {
 						sseProxyRegister1 = XMVectorSetZ(sseProxyRegister1, -0.05f);
 					}
-					else { //если минимальное расстояние явлется минимальным расстоянием от точки до верхней грани хитбокса
+					else { //РµСЃР»Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ СЏРІР»РµС‚СЃСЏ РјРёРЅРёРјР°Р»СЊРЅС‹Рј СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РѕС‚ С‚РѕС‡РєРё РґРѕ РІРµСЂС…РЅРµР№ РіСЂР°РЅРё С…РёС‚Р±РѕРєСЃР°
 						sseProxyRegister2 = XMVectorSetZ(sseProxyRegister2, 0.05f);
 						sseProxyRegister3 += sseProxyRegister2;
 						sseProxyRegister1 += XMVectorAndInt(sseProxyRegister3, g_XMMaskZ);
 					}
 				}
-				// умножить на обратную матрицу
+				// СѓРјРЅРѕР¶РёС‚СЊ РЅР° РѕР±СЂР°С‚РЅСѓСЋ РјР°С‚СЂРёС†Сѓ
 				sseProxyRegister2 = XMLoadFloat3(&DynamicHitBoxesArray[i].halvesOfWidthHeightLength);
 				sseProxyRegister1 -= sseProxyRegister2;
 				sseProxyRegister0_Matrix = XMMatrixRotationY(DynamicHitBoxesArray[i].angle);
 				sseProxyRegister1 = XMVector3Transform(sseProxyRegister1, sseProxyRegister0_Matrix);
 				sseProxyRegister2 = XMLoadFloat3(&DynamicHitBoxesArray[i].position);
 				sseProxyRegister1 += sseProxyRegister2;
-				// сохранить измененную позицию в currentCameraPosition
+				// СЃРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРЅСѓСЋ РїРѕР·РёС†РёСЋ РІ currentCameraPosition
 				XMStoreFloat3(&currentCameraPos, sseProxyRegister1);
 
-				//меняем view matrix, так чтобы она описывала систему координат в новой, смещенной точке
-				//находим координаты новой позиции в текущей системе координат камеры
+				//РјРµРЅСЏРµРј view matrix, С‚Р°Рє С‡С‚РѕР±С‹ РѕРЅР° РѕРїРёСЃС‹РІР°Р»Р° СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚ РІ РЅРѕРІРѕР№, СЃРјРµС‰РµРЅРЅРѕР№ С‚РѕС‡РєРµ
+				//РЅР°С…РѕРґРёРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РЅРѕРІРѕР№ РїРѕР·РёС†РёРё РІ С‚РµРєСѓС‰РµР№ СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚ РєР°РјРµСЂС‹
 				matricesWVP.mView = XMMatrixTranspose(matricesWVP.mView);
 				sseProxyRegister1 = XMVector3Transform(sseProxyRegister1, matricesWVP.mView);
 				sseProxyRegister1 = XMVectorSetW(sseProxyRegister1, 0.0f);
-				//переносим систему координат камеры в новую точку
+				//РїРµСЂРµРЅРѕСЃРёРј СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚ РєР°РјРµСЂС‹ РІ РЅРѕРІСѓСЋ С‚РѕС‡РєСѓ
 				matricesWVP.mView.r[3] -= sseProxyRegister1;
 				matricesWVP.mView = XMMatrixTranspose(matricesWVP.mView);
 			}
@@ -1413,41 +1413,41 @@ void DynamicHitBoxesCollisionDetection() {
 };
 
 float DynamicHitBoxCyclesAmount(DynamicHitBox* hitBox) {
-	// позиция хитбокса относительно системы координат, находящейся в левом нижнем углу карты
+	// РїРѕР·РёС†РёСЏ С…РёС‚Р±РѕРєСЃР° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚, РЅР°С…РѕРґСЏС‰РµР№СЃСЏ РІ Р»РµРІРѕРј РЅРёР¶РЅРµРј СѓРіР»Сѓ РєР°СЂС‚С‹
 	sseProxyRegister0 = XMLoadFloat3(&hitBox->position);
 	sseProxyRegister0 += halvesOfWidthHeightLengthOfMap;
 	
-	// узнаем какие координаты вектора движения отрицательные, и какие положительные
+	// СѓР·РЅР°РµРј РєР°РєРёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІРµРєС‚РѕСЂР° РґРІРёР¶РµРЅРёСЏ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рµ, Рё РєР°РєРёРµ РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Рµ
 	sseProxyRegister1 = XMVectorAndInt(*hitBox->moveVectorPtr, g_XMNegate3);
 
 	float xValue = XMVectorGetX(sseProxyRegister1);
 	float zValue = XMVectorGetZ(sseProxyRegister1);
 
-	// если X < 0 или X == -0
-	if (*((UINT*) &xValue) == 0x80000000U) { // пиздец уродство... ну а как по другому, union или reinterpret_cast мб?
+	// РµСЃР»Рё X < 0 РёР»Рё X == -0
+	if (*((UINT*) &xValue) == 0x80000000U) { // РїРёР·РґРµС† СѓСЂРѕРґСЃС‚РІРѕ... РЅСѓ Р° РєР°Рє РїРѕ РґСЂСѓРіРѕРјСѓ, union РёР»Рё reinterpret_cast РјР±?
 		sseProxyRegister2 = XMVectorSetX(sseProxyRegister2, 0.0f);
 	}
 	else {
-		// если X > 0 или X == +0
-		sseProxyRegister2 = XMVectorSetX(sseProxyRegister2, 100.0f); // 100 - ширина карты
+		// РµСЃР»Рё X > 0 РёР»Рё X == +0
+		sseProxyRegister2 = XMVectorSetX(sseProxyRegister2, 100.0f); // 100 - С€РёСЂРёРЅР° РєР°СЂС‚С‹
 	}
 	
-	// если Z < 0 или Z == -0
+	// РµСЃР»Рё Z < 0 РёР»Рё Z == -0
 	if (*((UINT*) &zValue) == 0x80000000U) {
 		sseProxyRegister2 = XMVectorSetZ(sseProxyRegister2, 0.0f);
 	}
 	else {
-		// если Z > 0 или Z == +0
-		sseProxyRegister2 = XMVectorSetZ(sseProxyRegister2, 100.0f); // 100 - длина карты
+		// РµСЃР»Рё Z > 0 РёР»Рё Z == +0
+		sseProxyRegister2 = XMVectorSetZ(sseProxyRegister2, 100.0f); // 100 - РґР»РёРЅР° РєР°СЂС‚С‹
 	}
 
-	// количество moveVector-ов необходимых прибавить к позиции хитбокса, для того
-	// чтобы центр хитбокса вышел за пределы карты
-	// причем если какая то координата moveVector равна +0 или -0, то мы получим +inf в sseProxyRegister3 на месте этой координаты
-	// это свойство хорошо используется при поиске минимума среди координат sseProxyRegister3
+	// РєРѕР»РёС‡РµСЃС‚РІРѕ moveVector-РѕРІ РЅРµРѕР±С…РѕРґРёРјС‹С… РїСЂРёР±Р°РІРёС‚СЊ Рє РїРѕР·РёС†РёРё С…РёС‚Р±РѕРєСЃР°, РґР»СЏ С‚РѕРіРѕ
+	// С‡С‚РѕР±С‹ С†РµРЅС‚СЂ С…РёС‚Р±РѕРєСЃР° РІС‹С€РµР» Р·Р° РїСЂРµРґРµР»С‹ РєР°СЂС‚С‹
+	// РїСЂРёС‡РµРј РµСЃР»Рё РєР°РєР°СЏ С‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚Р° moveVector СЂР°РІРЅР° +0 РёР»Рё -0, С‚Рѕ РјС‹ РїРѕР»СѓС‡РёРј +inf РІ sseProxyRegister3 РЅР° РјРµСЃС‚Рµ СЌС‚РѕР№ РєРѕРѕСЂРґРёРЅР°С‚С‹
+	// СЌС‚Рѕ СЃРІРѕР№СЃС‚РІРѕ С…РѕСЂРѕС€Рѕ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РїСЂРё РїРѕРёСЃРєРµ РјРёРЅРёРјСѓРјР° СЃСЂРµРґРё РєРѕРѕСЂРґРёРЅР°С‚ sseProxyRegister3
 	sseProxyRegister3 = (sseProxyRegister2 - sseProxyRegister0) / (*hitBox->moveVectorPtr);
 
-	// поиск минимума среди координат
+	// РїРѕРёСЃРє РјРёРЅРёРјСѓРјР° СЃСЂРµРґРё РєРѕРѕСЂРґРёРЅР°С‚
 	if (XMVectorGetX(sseProxyRegister3) < XMVectorGetZ(sseProxyRegister3)) {
 		return XMVectorGetX(XMVectorCeiling(sseProxyRegister3));
 	}
@@ -1455,12 +1455,12 @@ float DynamicHitBoxCyclesAmount(DynamicHitBox* hitBox) {
 };
 
 void CreateNewMoveVectorForDynamicHitBox(DynamicHitBox* hitBox) {
-	// кладем текущую позицию камеры
+	// РєР»Р°РґРµРј С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ РєР°РјРµСЂС‹
 	sseProxyRegister0 = XMLoadFloat3(&currentCameraPos);
-	// позиция хитбокса
+	// РїРѕР·РёС†РёСЏ С…РёС‚Р±РѕРєСЃР°
 	sseProxyRegister1 = XMLoadFloat3(&hitBox->position);
 
-	// находим вектор
+	// РЅР°С…РѕРґРёРј РІРµРєС‚РѕСЂ
 	sseProxyRegister0 -= sseProxyRegister1;
 	sseProxyRegister0 = XMVector3NormalizeEst(sseProxyRegister0);
 	sseProxyRegister0 *= DYNAMIC_HIT_BOX_MOVEVECTOR_LENGTH; 
@@ -1499,64 +1499,64 @@ HRESULT InitWallsVertices(Vertex* wallsVertexArray, LPCWSTR wallsVertexShaderNam
 	UINT offset[] = { 0 };
 	g_pImmediateContext->IASetVertexBuffers(0, 1, &pWallsVertexBuffer, stride, offset);
 
-	// компиляция шейдеров
-	// найти cso файлы в директории
+	// РєРѕРјРїРёР»СЏС†РёСЏ С€РµР№РґРµСЂРѕРІ
+	// РЅР°Р№С‚Рё cso С„Р°Р№Р»С‹ РІ РґРёСЂРµРєС‚РѕСЂРёРё
 	
 	
-	// Создание Input-Layout Object
-	// Связывание Input-layout object с конвейером
+	// РЎРѕР·РґР°РЅРёРµ Input-Layout Object
+	// РЎРІСЏР·С‹РІР°РЅРёРµ Input-layout object СЃ РєРѕРЅРІРµР№РµСЂРѕРј
 
 };
 
 void FindFilesInCurrentDirFromFile(WCHAR* filesArray, size_t* filesNamesLengthArray){
-	// найти cso файлы в директории
+	// РЅР°Р№С‚Рё cso С„Р°Р№Р»С‹ РІ РґРёСЂРµРєС‚РѕСЂРёРё
 	WCHAR fileName [] = "\TriangleVertexShader*";
 	size_t fileNameSize = sizeof(fileName);
 	
 	HANDLE searchHandle;
 	WIN32_FIND_DATA fileData;
 	
-	// буфер хранения строки пути файла
+	// Р±СѓС„РµСЂ С…СЂР°РЅРµРЅРёСЏ СЃС‚СЂРѕРєРё РїСѓС‚Рё С„Р°Р№Р»Р°
 	WCHAR fileDirBuffer [MAX_PATH];
-	// длина пути файла с учетом null(все длины строк с учетом null), без учета имени искомого файла
+	// РґР»РёРЅР° РїСѓС‚Рё С„Р°Р№Р»Р° СЃ СѓС‡РµС‚РѕРј null(РІСЃРµ РґР»РёРЅС‹ СЃС‚СЂРѕРє СЃ СѓС‡РµС‚РѕРј null), Р±РµР· СѓС‡РµС‚Р° РёРјРµРЅРё РёСЃРєРѕРјРѕРіРѕ С„Р°Р№Р»Р°
 	DWORD fileDirBufLength = GetCurrentDirectory(MAX_PATH, fileDirBuffer) + 1;
 	
-	// поиск файла
+	// РїРѕРёСЃРє С„Р°Р№Р»Р°
 	FindFilesInCurrentDir(fileDirBuffer, fileDirBufLength, fileName, fileNameLength, &fileData);
 };
 
-// ищет первый попавшийся файл, заданный в качестве аргумента, в заданной директории
-// fileName должден начининаться с '\', fileDir должен заканчиваться названием крайнего каталога или диска, без '\'
+// РёС‰РµС‚ РїРµСЂРІС‹Р№ РїРѕРїР°РІС€РёР№СЃСЏ С„Р°Р№Р», Р·Р°РґР°РЅРЅС‹Р№ РІ РєР°С‡РµСЃС‚РІРµ Р°СЂРіСѓРјРµРЅС‚Р°, РІ Р·Р°РґР°РЅРЅРѕР№ РґРёСЂРµРєС‚РѕСЂРёРё
+// fileName РґРѕР»Р¶РґРµРЅ РЅР°С‡РёРЅРёРЅР°С‚СЊСЃСЏ СЃ '\', fileDir РґРѕР»Р¶РµРЅ Р·Р°РєР°РЅС‡РёРІР°С‚СЊСЃСЏ РЅР°Р·РІР°РЅРёРµРј РєСЂР°Р№РЅРµРіРѕ РєР°С‚Р°Р»РѕРіР° РёР»Рё РґРёСЃРєР°, Р±РµР· '\'
 HRESULT FindFilesInCurrentDir(WCHAR* fileDirBuffer, size_t fileDirBufLength, WCHAR* fileName, size_t fileNameLength, WIN32_FIND_DATA* fileDataPtr){
-	// создается полный путь до файла
+	// СЃРѕР·РґР°РµС‚СЃСЏ РїРѕР»РЅС‹Р№ РїСѓС‚СЊ РґРѕ С„Р°Р№Р»Р°
 	memcpy(&fileDirBuffer[fileDirBufLength - 1], &fileName[0], fileNameSize);
 	
 	HANDLE searchHandle = FindFirstFileEx(fileDirBuffer, FindExInfoBasic, fileDataPtr, FindExSearchNameMatch, NULL, 0);
-	// если нужный файл нашелся
+	// РµСЃР»Рё РЅСѓР¶РЅС‹Р№ С„Р°Р№Р» РЅР°С€РµР»СЃСЏ
 	if(searchHandle != INVALID_HANDLE_VALUE){
 		// ret fileDirBuffer
 		FindClose(searchHandle);
 		return S_OK;
 	} 
-	// если нужный файл не нашелся
+	// РµСЃР»Рё РЅСѓР¶РЅС‹Р№ С„Р°Р№Р» РЅРµ РЅР°С€РµР»СЃСЏ
 	else{
 		FindClose(searchHandle);
 		
-		fileDirBuffer[fileDirBufLength + 1] = L'*'; // curDirLength + 1 потому что '*' нужно поставить после '\'
+		fileDirBuffer[fileDirBufLength + 1] = L'*'; // curDirLength + 1 РїРѕС‚РѕРјСѓ С‡С‚Рѕ '*' РЅСѓР¶РЅРѕ РїРѕСЃС‚Р°РІРёС‚СЊ РїРѕСЃР»Рµ '\'
 		fileDirBuffer[fileDirBufLength + 2] = NULL;
 		fileDirBufLength += 2; 
 			
 		searchHandle = FindFirstFileEx(fileDirBuffer, FindExInfoBasic, fileDataPtr, FindExSearchNameMatch, NULL, 0);
-		// если текущий каталог не пуст
+		// РµСЃР»Рё С‚РµРєСѓС‰РёР№ РєР°С‚Р°Р»РѕРі РЅРµ РїСѓСЃС‚
 		if (searchHandle != INVALID_HANDLE_VALUE) {
 		do {
-			// если найденый файл - каталог
+			// РµСЃР»Рё РЅР°Р№РґРµРЅС‹Р№ С„Р°Р№Р» - РєР°С‚Р°Р»РѕРі
 			if(fileDataPtr->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				// изменение текущей директории
+				// РёР·РјРµРЅРµРЅРёРµ С‚РµРєСѓС‰РµР№ РґРёСЂРµРєС‚РѕСЂРёРё
 				size_t folderNameLength = FileNameLength(fileDataPtr->cFileName);
 				memcpy(&fileDirBuffer[fileDirBufLength - 1], fileDataPtr->cFileName[0], folderNameLength);
 				
-				// если в следующей директории нашелся файл
+				// РµСЃР»Рё РІ СЃР»РµРґСѓСЋС‰РµР№ РґРёСЂРµРєС‚РѕСЂРёРё РЅР°С€РµР»СЃСЏ С„Р°Р№Р»
 				if (FindFilesInCurrentDir(fileDirBuffer, fileDirBufLength + folderNameLength - 2, fileName, fileNameLength) == S_OK){
 					FindClose(searchHandle);
 					return S_OK;
@@ -1564,7 +1564,7 @@ HRESULT FindFilesInCurrentDir(WCHAR* fileDirBuffer, size_t fileDirBufLength, WCH
 			}	
 		} while (FindNextFile(searchHandle, fileDataPtr) != 0)
 		}
-		// если директория пуста или все каталоги в директории проверены	
+		// РµСЃР»Рё РґРёСЂРµРєС‚РѕСЂРёСЏ РїСѓСЃС‚Р° РёР»Рё РІСЃРµ РєР°С‚Р°Р»РѕРіРё РІ РґРёСЂРµРєС‚РѕСЂРёРё РїСЂРѕРІРµСЂРµРЅС‹	
 		else{
 			FindClose(searchHandle);
 			return E_FAIL;
@@ -1572,7 +1572,7 @@ HRESULT FindFilesInCurrentDir(WCHAR* fileDirBuffer, size_t fileDirBufLength, WCH
 	}
 };
 
-// с учетом null
+// СЃ СѓС‡РµС‚РѕРј null
 inline size_t __vectorcall FileNameLength(WCHAR* name){
 	size_t nameLength = 1;
 	if(name[nameLength] != NULL){
