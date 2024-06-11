@@ -1,3 +1,8 @@
+#include "preproc.h"
+#include "struct.h"
+#include "global.h"
+#include "func.h"
+
 // Главная функция, точка входа
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 	// Переменная для хранения кода, возвращаемого вызванным методом интерфейса
