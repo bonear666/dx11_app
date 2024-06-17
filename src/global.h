@@ -1,3 +1,5 @@
+#define _GLOBAL_H
+
 // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
 
 HINSTANCE               g_hInst = NULL; //указатель на struct, дескриптор(handle) данного приложения.

@@ -1,3 +1,5 @@
+#define _PREPROC_H
+
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "d3d11")
 #pragma comment(lib, "d3d10_1")
@@ -38,3 +40,6 @@
 										}\
 										else\
 											shadersModel = { "vs_4_0", "ps_4_0" };
+
+#define SHADERS_LIST_CHAR_NUM 43 // with BOM										
+											

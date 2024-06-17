@@ -1510,7 +1510,7 @@ HRESULT InitWallsVertices(Vertex* wallsVertexArray, LPCWSTR wallsVertexShaderNam
 
 void FindFilesInCurrentDirFromFile(WCHAR* filesArray, size_t* filesNamesLengthArray){
 	// найти cso файлы в директории
-	WCHAR fileName [] = "\TriangleVertexShader*";
+	static const WCHAR fileName [] = L"\TriangleVertexShader*";
 	size_t fileNameSize = sizeof(fileName);
 	
 	HANDLE searchHandle;
@@ -1520,6 +1520,17 @@ void FindFilesInCurrentDirFromFile(WCHAR* filesArray, size_t* filesNamesLengthAr
 	WCHAR fileDirBuffer [MAX_PATH];
 	// длина пути файла с учетом null(все длины строк с учетом null), без учета имени искомого файла
 	DWORD fileDirBufLength = GetCurrentDirectory(MAX_PATH, fileDirBuffer) + 1;
+	
+	WCHAR shadersList[MAX_PATH];
+	memcpy(shadersList, fileDirBuffer, fileDirBufLength * sizeof(WCHAR));
+	memcpy(shadersList[fileDirBufLength - 1], L"\res\shaders_list.txt", sizeof(L"\res\shaders_list.txt"));
+	
+	HANDLE shadersListHandle = CreateFile(shadersList, GENERIC_READ, NULL, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
+	
+	WCHAR* shadersListBuf = (WCHAR*)(DynamicHitBoxesArray + DYNAMIC_HIT_BOX_AMOUNT);
+	DWORD bytesReadNum;
+
+	ReadFile(shadersListHandle, shadersListBuf, SHADERS_LIST_CHAR_NUM * sizeof(WCHAR), &bytesReadNum, NULL);
 	
 	// поиск файла
 	FindFilesInCurrentDir(fileDirBuffer, fileDirBufLength, fileName, fileNameLength, &fileData);

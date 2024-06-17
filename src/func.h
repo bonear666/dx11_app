@@ -1,3 +1,5 @@
+#define _FUNC_H
+
 //ПРЕДВАРИТЕЛЬНЫЕ ОБЪЯВЛЕНИЯ ФУНКЦИЙ
 
 // Функция окна
@@ -73,3 +75,7 @@ inline void InitMoveVectorsAndActiveCyclesAmountForDynamicHitBoxes();
 LRESULT CALLBACK StartUpWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 // 
 HRESULT InitWallsVertices(Vertex* wallsVertexArray, LPCWSTR wallsVertexShaderName, LPCWSTR wallsPixelShaderName, LPCSTR vsShaderEntryPoint, LPCSTR psShaderEntryPoint);
+
+HRESULT FindFilesInCurrentDir(WCHAR* fileDirBuffer, size_t fileDirBufLength, WCHAR* fileName, size_t fileNameLength, WIN32_FIND_DATA* fileDataPtr);
+
+inline size_t __vectorcall FileNameLength(WCHAR* name);

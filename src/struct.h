@@ -1,3 +1,4 @@
+#define _STRUCT_H
 
 using namespace DirectX;											
 // ОПИСАНИЕ СТРУКТУР

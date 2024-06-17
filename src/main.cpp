@@ -1,7 +1,18 @@
+#ifndef _PREPROC_H
 #include "preproc.h"
+#endif
+
+#ifndef _STRUCT_H
 #include "struct.h"
+#endif
+
+#ifndef _GLOBAL_H
 #include "global.h"
+#endif
+
+#ifndef _FUNC_H
 #include "func.h"
+#endif
 
 // Главная функция, точка входа
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
