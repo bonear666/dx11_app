@@ -35,11 +35,17 @@
 #define ROTATION_ANGLE 0.00007f
 #define W_COORD 0.01f
 
+// macro
 #define SHADERS_MODEL(FEATURE_LEVEL) if (FEATURE_LEVEL >= D3D_FEATURE_LEVEL_11_0) {\
 											shadersModel = { "vs_5_0", "ps_5_0" };\
 										}\
 										else\
 											shadersModel = { "vs_4_0", "ps_4_0" };
+											
+#define BUF_FILL_FROM_FILE(FILE_DIR, FILE_HANDLE, BUFFER_PTR, BYTES_NUM, BYTES_NUM_VAR)\
+HANDLE FILE_HANDLE = CreateFile(FILE_DIR, GENERIC_READ, NULL, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);\
+ReadFile(FILE_HANDLE, (LPVOID*)BUFFER_PTR, BYTES_NUM, &BYTES_NUM_VAR, NULL);\
+CloseHandle(FILE_HANDLE);
 
-#define SHADERS_LIST_CHAR_NUM 43 // with BOM										
+#define SHADERS_LIST_CHAR_NUM 52 // with BOM										
 											

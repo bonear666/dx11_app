@@ -1508,6 +1508,10 @@ HRESULT InitWallsVertices(Vertex* wallsVertexArray, LPCWSTR wallsVertexShaderNam
 
 };
 
+inline bool BufFillFromFile(WCHAR* file, void* bufferPtr){
+	
+};
+
 void FindFilesInCurrentDirFromFile(WCHAR* filesArray, size_t* filesNamesLengthArray){
 	// найти cso файлы в директории
 	static const WCHAR fileName [] = L"\TriangleVertexShader*";
@@ -1521,23 +1525,44 @@ void FindFilesInCurrentDirFromFile(WCHAR* filesArray, size_t* filesNamesLengthAr
 	// длина пути файла с учетом null(все длины строк с учетом null), без учета имени искомого файла
 	DWORD fileDirBufLength = GetCurrentDirectory(MAX_PATH, fileDirBuffer) + 1;
 	
+	// путь до списка шейдеров
 	WCHAR shadersList[MAX_PATH];
 	memcpy(shadersList, fileDirBuffer, fileDirBufLength * sizeof(WCHAR));
 	memcpy(shadersList[fileDirBufLength - 1], L"\res\shaders_list.txt", sizeof(L"\res\shaders_list.txt"));
 	
-	HANDLE shadersListHandle = CreateFile(shadersList, GENERIC_READ, NULL, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
-	
+	// значения из файла списка шейдеров, хранятся в том же буфере, что и хитбоксы
 	WCHAR* shadersListBuf = (WCHAR*)(DynamicHitBoxesArray + DYNAMIC_HIT_BOX_AMOUNT);
 	DWORD bytesReadNum;
-
-	ReadFile(shadersListHandle, shadersListBuf, SHADERS_LIST_CHAR_NUM * sizeof(WCHAR), &bytesReadNum, NULL);
 	
-	// поиск файла
-	FindFilesInCurrentDir(fileDirBuffer, fileDirBufLength, fileName, fileNameLength, &fileData);
+	// to do заменить на макрос, если он работает правильно
+	HANDLE shadersListHandle = CreateFile(shadersList, GENERIC_READ, NULL, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
+	ReadFile(shadersListHandle, (LPVOID*)shadersListBuf, SHADERS_LIST_CHAR_NUM * sizeof(WCHAR), &bytesReadNum, NULL);
+	CloseHandle(shadersListHandle);
+	WCHAR* shaderNamePtr = shadersListBuf + 1; // игнорировать BOM байты
+	
+	for(size_t i = SHADERS_LIST_CHAR_NUM - 1; i != 0;){
+		// поиск файла
+		FindFilesInCurrentDir(fileDirBuffer, fileDirBufLength, shaderNamePtr + 1, *((size_t*)shaderNamePtr), &fileData);
+		
+		// загрузить шейдер
+		void* compiledShader = (void*)(shadersListBuf + SHADERS_LIST_CHAR_NUM);
+		
+		HANDLE compiledShaderHandle = CreateFile(fileDirBuffer, GENERIC_READ, NULL, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
+		ReadFile(compiledShaderHandle, (LPVOID*)compiledShader, BYTES_NUM, &BYTES_NUM_VAR, NULL);
+		CloseHandle(FILE_HANDLE);
+		
+		DWORD compiledShaderSize = GetFileSize();
+		//BUF_FILL_FROM_FILE(fileDirBuffer, compiledShaderHandle, compiledShader, )
+		
+		i -= *((size_t*)shaderNamePtr) + 1; 
+		shaderNamePtr += *((size_t*)shaderNamePtr) + 1;
+		fileDirBuffer[fileDirBufLength - 1] = NULL; 
+	}
 };
 
 // ищет первый попавшийся файл, заданный в качестве аргумента, в заданной директории
 // fileName должден начининаться с '\', fileDir должен заканчиваться названием крайнего каталога или диска, без '\'
+// путь до найденого файла находится в fileDirBuffer
 HRESULT FindFilesInCurrentDir(WCHAR* fileDirBuffer, size_t fileDirBufLength, WCHAR* fileName, size_t fileNameLength, WIN32_FIND_DATA* fileDataPtr){
 	// создается полный путь до файла
 	memcpy(&fileDirBuffer[fileDirBufLength - 1], &fileName[0], fileNameSize);
