@@ -1512,10 +1512,10 @@ inline bool BufFillFromFile(WCHAR* file, void* bufferPtr){
 	
 };
 
-void FindFilesInCurrentDirFromFile(WCHAR* filesArray, size_t* filesNamesLengthArray){
+void FindFilesInCurrentDirFromFile(WCHAR* filesFileDir, size_t filesFileSize, void (*funcPtr)(WCHAR*, void*), void* funcParam){
 	// найти cso файлы в директории
-	static const WCHAR fileName [] = L"\TriangleVertexShader*";
-	size_t fileNameSize = sizeof(fileName);
+	//static const WCHAR fileName [] = L"\TriangleVertexShader*";
+	//size_t fileNameSize = sizeof(fileName);
 	
 	HANDLE searchHandle;
 	WIN32_FIND_DATA fileData;
@@ -1540,19 +1540,21 @@ void FindFilesInCurrentDirFromFile(WCHAR* filesArray, size_t* filesNamesLengthAr
 	CloseHandle(shadersListHandle);
 	WCHAR* shaderNamePtr = shadersListBuf + 1; // игнорировать BOM байты
 	
+	// буфер с шейдером
+	void* compiledShaderPtr = (void*)(shadersListBuf + SHADERS_LIST_CHAR_NUM);
+	
 	for(size_t i = SHADERS_LIST_CHAR_NUM - 1; i != 0;){
 		// поиск файла
 		FindFilesInCurrentDir(fileDirBuffer, fileDirBufLength, shaderNamePtr + 1, *((size_t*)shaderNamePtr), &fileData);
 		
 		// загрузить шейдер
-		void* compiledShader = (void*)(shadersListBuf + SHADERS_LIST_CHAR_NUM);
-		
 		HANDLE compiledShaderHandle = CreateFile(fileDirBuffer, GENERIC_READ, NULL, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
-		ReadFile(compiledShaderHandle, (LPVOID*)compiledShader, BYTES_NUM, &BYTES_NUM_VAR, NULL);
-		CloseHandle(FILE_HANDLE);
+		DWORD compiledShaderSize = GetFileSize(compiledShaderHandle, &compiledShaderSize);
+		ReadFile(compiledShaderHandle, compiledShaderPtr, compiledShaderSize, &bytesReadNum, NULL);
+		CloseHandle(compiledShaderHandle);
+		compiledShaderPtr = ((char*)compiledShaderPtr) + compiledShaderSize; 
 		
-		DWORD compiledShaderSize = GetFileSize();
-		//BUF_FILL_FROM_FILE(fileDirBuffer, compiledShaderHandle, compiledShader, )
+		// создание объекта шейдера
 		
 		i -= *((size_t*)shaderNamePtr) + 1; 
 		shaderNamePtr += *((size_t*)shaderNamePtr) + 1;
