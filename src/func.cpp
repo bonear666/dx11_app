@@ -1501,6 +1501,7 @@ HRESULT InitWallsVertices(Vertex* wallsVertexArray, LPCWSTR wallsVertexShaderNam
 
 	// компиляция шейдеров
 	// найти cso файлы в директории
+	FindFilesInCurrentDirFromFile(L"\res\shaders_list.txt", sizeof(L"\res\shaders_list.txt"),,);
 	
 	
 	// Создание Input-Layout Object
@@ -1534,31 +1535,51 @@ void FindFilesInCurrentDirFromFile(WCHAR* filesFileDir, size_t filesFileSize, vo
 	WCHAR* shadersListBuf = (WCHAR*)(DynamicHitBoxesArray + DYNAMIC_HIT_BOX_AMOUNT);
 	DWORD bytesReadNum;
 	
-	// to do заменить на макрос, если он работает правильно
+	// извлечение информации из файла списка шейдеров
 	HANDLE shadersListHandle = CreateFile(shadersList, GENERIC_READ, NULL, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
 	ReadFile(shadersListHandle, (LPVOID*)shadersListBuf, SHADERS_LIST_CHAR_NUM * sizeof(WCHAR), &bytesReadNum, NULL);
 	CloseHandle(shadersListHandle);
 	WCHAR* shaderNamePtr = shadersListBuf + 1; // игнорировать BOM байты
 	
-	// буфер с шейдером
-	void* compiledShaderPtr = (void*)(shadersListBuf + SHADERS_LIST_CHAR_NUM);
+	// массив шейдеров
+	shadersBufferArray = (ID3DBlob**)(shadersListBuf + SHADERS_LIST_CHAR_NUM);
+	// информация о шейдере
+	D3D11_SHADER_DESC shaderDesc;
 	
-	for(size_t i = SHADERS_LIST_CHAR_NUM - 1; i != 0;){
+	for(size_t i = SHADERS_LIST_CHAR_NUM - 1, size_t shaderNum = 0, size_t vertexShaderNum = 0, size_t pixelShaderNum = 0; i != 0;){
 		// поиск файла
 		FindFilesInCurrentDir(fileDirBuffer, fileDirBufLength, shaderNamePtr + 1, *((size_t*)shaderNamePtr), &fileData);
 		
 		// загрузить шейдер
-		HANDLE compiledShaderHandle = CreateFile(fileDirBuffer, GENERIC_READ, NULL, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
-		DWORD compiledShaderSize = GetFileSize(compiledShaderHandle, &compiledShaderSize);
-		ReadFile(compiledShaderHandle, compiledShaderPtr, compiledShaderSize, &bytesReadNum, NULL);
-		CloseHandle(compiledShaderHandle);
-		compiledShaderPtr = ((char*)compiledShaderPtr) + compiledShaderSize; 
+		D3DReadFileToBlob(fileDirBuffer, shadersBufferArray[shaderNum]); // создается ли blob или его нужно создать самому перед вызовом?
+	
+		// получение информации о шейдере
+		D3DReflect(shadersBufferArray[shaderNum]->GetBufferPointer(), shadersBufferArray[shaderNum]->GetBufferSize(),IID_ID3D11ShaderReflection, (void**) &shaderReflect);
+		shaderReflect->GetDesc(&shaderDesc);
 		
-		// создание объекта шейдера
+		switch(D3D11_SHVER_GET_TYPE(shaderDesc.Version)){
+			// создание шейдерных объектов
+			// если вершинный шейдер
+			case D3D11_SHADER_VERSION_TYPE::D3D11_SHVER_VERTEX_SHADER:
+			{
+				g_pd3dDevice->CreateVertexShader(shadersBufferArray[shaderNum]->GetBufferPointer(), shadersBufferArray[shaderNum]->GetBufferSize(), NULL, &pixelShadersObj[shaderNum]); 
+				shadersBufferArray[shaderNum]->Realese();
+				break;
+			}
+			
+			// если пиксельный
+			case D3D11_SHADER_VERSION_TYPE::D3D11_SHVER_PIXEL_SHADER:
+			{
+				g_pd3dDevice->CreatePixelShader(shadersBufferArray[shaderNum]->GetBufferPointer(), shadersBufferArray[shaderNum]->GetBufferSize(), NULL, &pixelShadersObj[shaderNum]); 
+				shadersBufferArray[shaderNum]->Realese();
+				break;
+			}
+		}
 		
 		i -= *((size_t*)shaderNamePtr) + 1; 
 		shaderNamePtr += *((size_t*)shaderNamePtr) + 1;
-		fileDirBuffer[fileDirBufLength - 1] = NULL; 
+		fileDirBuffer[fileDirBufLength - 1] = NULL;
+		shaderNum++;	
 	}
 };
 

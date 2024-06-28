@@ -15,9 +15,12 @@ ShaderModelDesc shadersModel;
 ID3D11InputLayout* g_pInputLayoutObject = NULL; // указатель на input layout object
 ID3D11VertexShader* g_pVertexShader = NULL; // указатель на интерфейс vertex shader
 ID3D11PixelShader* g_pPixelShader = NULL; // указатель на интерфейс pixel shader
+ID3D11VertexShader** vertexShadersObj = NULL; // массив объектов вершинных шейдеров
+ID3D11PixelShader** pixelShadersObj = NULL; // массив объектов пиксельных шейдеров
 ID3DBlob* VS_Buffer = NULL; // указатель на интерфейс буфера с скомпилированным вершинным шейдером 
 ID3DBlob* PS_Buffer = NULL; // указатель на интерфейс буфера с скомпилированным пиксельным шейдером 
-ID3DBlob** ppShadersBuffer = NULL; // массив указатели шейдерных буферов
+ID3DBlob** shadersBufferArray = NULL; // массив указатели шейдерных буферов (порядок шейдеров в массиве как в файле со списком шейдеров)
+ID3D11ShaderReflection*  shaderReflect = NULL; // информация о шейдере
 ID3D11Buffer* pVertexBuffer = NULL; // указатель на буфер вершин пирамиды
 ID3D11Buffer* pWallsVertexBuffer = NULL; // указатель на буфер вершин стен
 ID3D11Buffer* pConstantBuffer = NULL; // констнантный буфер
