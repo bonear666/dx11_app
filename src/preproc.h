@@ -47,5 +47,12 @@ HANDLE FILE_HANDLE = CreateFile(FILE_DIR, GENERIC_READ, NULL, NULL, OPEN_EXISTIN
 ReadFile(FILE_HANDLE, (LPVOID*)BUFFER_PTR, BYTES_NUM, &BYTES_NUM_VAR, NULL);\
 CloseHandle(FILE_HANDLE);
 
-#define SHADERS_LIST_CHAR_NUM 52 // with BOM										
-											
+#define WCHAR_NUM_OF_STRING(STRING) \
+sizeof(STRING) / sizeof(WCHAR)
+
+#define SHADERS_LIST_CHAR_NUM
+#define COMPILED_SHADERS_LIST_CHAR_NUM 52 // with BOM кол-во символов в списке шейдеров
+#define VERTEX_SHADERS_NUM 2 // кол-во шейдеров
+#define PIXEL_SHADER_NUM 1	
+#define LOG_FILE_FLAGS_NUM 1 // кол-во флагов(символов) в лог файле								
+#define LOG_FILE_COMPILED_SHADERS_FLAG_POS 1											

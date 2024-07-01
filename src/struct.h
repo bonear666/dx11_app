@@ -37,7 +37,7 @@ typedef XMFLOAT2 HitBoxWidthAndHeight;
 typedef FLOAT HitBoxAngle;
 // смещения в массиве
 typedef unsigned __int8 ArrayOffset8Bit;
-typedef unsigned __int16 ArrayOffset16Bit;
+typedef unsigned __int16 ArrayOffset16Bit, UInt16;
 
 // структура центра хитбокса, и позиции камеры в глобальных координатах
 typedef struct {

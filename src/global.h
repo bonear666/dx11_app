@@ -11,12 +11,12 @@ ID3D11Device* g_pd3dDevice = NULL; //указатель на struct(Объект
 ID3D11DeviceContext* g_pImmediateContext = NULL; //указатель на struct(Объект Интерфейса ID3D11DeviceContext). ID3D11DeviceContext это COM-интерфейс, который занимается отрисовкой графической информации на Дисплей.
 IDXGISwapChain* g_pSwapChain = NULL; //указатель на struct(Объект Интерфейса IDXGISwapChain). IDXGISwapChain это COM-интерфейс, который хранит в нескольких буферах несколько отрисованых Поверхностей перед их выводом на Дисплей.
 ID3D11RenderTargetView* g_pRenderTargetView = NULL; //указатель на struct(Объект Интерфейса ID3D11RenderTargetView). ID3D11RenderTargetView это COM-интерфейс, который хранит ресурсы back buffer-а. 
-ShaderModelDesc shadersModel;
+ShaderModelDesc shadersModel; // модель шейдеров
 ID3D11InputLayout* g_pInputLayoutObject = NULL; // указатель на input layout object
 ID3D11VertexShader* g_pVertexShader = NULL; // указатель на интерфейс vertex shader
 ID3D11PixelShader* g_pPixelShader = NULL; // указатель на интерфейс pixel shader
-ID3D11VertexShader** vertexShadersObj = NULL; // массив объектов вершинных шейдеров
-ID3D11PixelShader** pixelShadersObj = NULL; // массив объектов пиксельных шейдеров
+ID3D11VertexShader* vertexShadersObj[VERTEX_SHADERS_NUM]; // массив объектов вершинных шейдеров
+ID3D11PixelShader* pixelShadersObj[PIXEL_SHADERS_NUM]; // массив объектов пиксельных шейдеров
 ID3DBlob* VS_Buffer = NULL; // указатель на интерфейс буфера с скомпилированным вершинным шейдером 
 ID3DBlob* PS_Buffer = NULL; // указатель на интерфейс буфера с скомпилированным пиксельным шейдером 
 ID3DBlob** shadersBufferArray = NULL; // массив указатели шейдерных буферов (порядок шейдеров в массиве как в файле со списком шейдеров)
@@ -48,6 +48,7 @@ XMVECTOR moveRightVectorInGlobalCoord = XMVECTORF32{ 0.1f, 0.0f, 0.0f, 0.0f };
 XMVECTOR moveLeftVector = XMVectorSet(0.0f, 0.0f, 0.0f, 0.1f); 
 DWORD pageSize; // размер страницы виртуальной памяти
 DWORD allocationGranularity; // выравнивание адресов в виртуальной памяти
+WCHAR* shadersListBuf = NULL;
 
 // переменные, относящиеся к хитбоксам
 XMVECTOR halvesOfWidthHeightLengthOfMap = XMVECTORF32{50.0f, 0.0f, 50.0f, 0.0f}; // половины значений глобальной карты
