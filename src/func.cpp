@@ -1626,7 +1626,7 @@ inline bool CheckCompiledShadersFromLogFile(WCHAR* exeFileDir, size_t exeFileDir
 	}
 };
 
-void CreateShadersObjFromCompiledShaders(WCHAR* shadersListDir, size_t shadersListDirLength){
+inline void CreateShadersObjFromCompiledShaders(WCHAR* shadersListDir, size_t shadersListDirLength){
 	// найти cso файлы в текущей директории
 	
 	HANDLE searchHandle;
@@ -1695,10 +1695,7 @@ void CreateShadersObjFromCompiledShaders(WCHAR* shadersListDir, size_t shadersLi
 		shaderNum++;	
 	}
 };
-
-// ищет первый попавшийся файл, заданный в качестве аргумента, в заданной директории
-// fileName должден начининаться с '\', fileDir должен заканчиваться названием крайнего каталога или диска, без '\'
-// путь до найденого файла находится в fileDirBuffer
+ 
 HRESULT FindFilesInCurrentDir(WCHAR* fileDirBuffer, size_t fileDirBufLength, WCHAR* fileName, size_t fileNameLength, WIN32_FIND_DATA* fileDataPtr){
 	// создается полный путь до файла
 	wmemcpy(&fileDirBuffer[fileDirBufLength - 1], &fileName[0], fileNameLength);
@@ -1744,8 +1741,12 @@ HRESULT FindFilesInCurrentDir(WCHAR* fileDirBuffer, size_t fileDirBufLength, WCH
 	}
 };
 
+void InitShaders(){
+	if(CheckCompiledShadersFromLogFile())
+};
+
 // с учетом null
-inline size_t __vectorcall FileNameLength(WCHAR* name){
+inline size_t FileNameLength(WCHAR* name){
 	size_t nameLength = 0;
 	while(name[nameLength] != NULL){
 		nameLength++;
@@ -1754,6 +1755,8 @@ inline size_t __vectorcall FileNameLength(WCHAR* name){
 	
 	return nameLength;
 };
+
+
 // ОСВОБОДИТЬ ШЕЙДЕРНЫЕ ОБЪЕКТЫ ИЗ CreateShadersObjFromCompiledShaders
 void ReleaseObjects() {
 	if (dynamicMemory != NULL) {
