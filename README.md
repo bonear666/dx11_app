@@ -10,27 +10,27 @@
 Либо исполняемый файл должен компилироваться в ту же директорию, где находятся каталоги res, src, shaders, но в каталог Debug в этой директории, и должен быть объявлен #define _DEBUG в preproc.h.  
 
 # Описание файлов, каталогов
-Каталог res:  
+**Каталог res:**  
 	Каталог compiled_shaders - в нем хранятся скомпилированные шейдеры  
 	compiled_shaders_list.txt - список скомпилированных шейдеров  
 	shaders_list.txt - список шейдеров, которые нужно скомпилировать  
 	log.txt - файл для фиксирования каких-то событий  
 
-Каталог shaders:  
+**Каталог shaders:**  
 	triangle_VS.hlsl - вершинный шейдер пирамиды и не только  
 	triangle_PS.hlsl - пиксельный шейдер пирамиды, стен и не только  
 	walls_VS.hlsl - вершинный шейдер стен  
 	
-Каталог src:  
+**Каталог src:**  
 	directx_func.cpp -  
 	hitbox_func.cpp -  
 	math_func.cpp -  
 	shaderfiles_func.cpp -  
 	wnd_func.cpp -  
 	main.cpp -  
-	global.cpp - 
-	preproc.cpp - 
-	struct.cpp - 
+	global.cpp -  
+	preproc.cpp -  
+	struct.cpp -  
 
 # Структуры файлов из каталога res
 Структура res\shaders_list.txt(LE, utf-16):  
