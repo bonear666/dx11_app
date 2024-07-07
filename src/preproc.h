@@ -57,10 +57,10 @@ CloseHandle(FILE_HANDLE);
 sizeof(STRING) / sizeof(WCHAR)
 
 // параметры res файлов
-#define SHADERS_LIST_CHAR_NUM
+#define SHADERS_LIST_CHAR_NUM 55 // with BOM кол-во символов в списке шейдеров
 #define COMPILED_SHADERS_LIST_CHAR_NUM 52 // with BOM кол-во символов в списке шейдеров
 #define VERTEX_SHADERS_NUM 2 // кол-во шейдеров
-#define PIXEL_SHADER_NUM 1	
+#define PIXEL_SHADERS_NUM 1	
 #define SHADERS_TOTAL_NUM 3
 #define LOG_FILE_FLAGS_NUM 1 // кол-во флагов(символов) в лог файле								
 #define LOG_FILE_COMPILED_SHADERS_FLAG_POS 1

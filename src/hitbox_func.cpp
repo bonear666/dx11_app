@@ -4,8 +4,16 @@
 #include "preproc.h"
 #endif
 
+#ifndef _STRUCT_H
+#include "struct.h"
+#endif
+
 #ifndef _PREPROC_FUNC_H
 #include "preproc_func.h"
+#endif
+
+#ifndef _GLOBAL_EXTERN_H
+#include "global_extern.h"
 #endif
 
 void InitPageSizeAndAllocGranularityVariables() {

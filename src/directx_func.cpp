@@ -4,8 +4,16 @@
 #include "preproc.h"
 #endif
 
+#ifndef _STRUCT_H
+#include "struct.h"
+#endif
+
 #ifndef _PREPROC_FUNC_H
 #include "preproc_func.h"
+#endif
+
+#ifndef _GLOBAL_EXTERN_H
+#include "global_extern.h"
 #endif
 
 
@@ -211,7 +219,7 @@ HRESULT InitGeometry(Vertex* vertexArray, LPCWSTR vertexShaderName, LPCWSTR pixe
 	vertexBufferSubresourceInitData.SysMemSlicePitch = 0;
 
 	// создание vertex buffer
-	hr = g_pd3dDevice->CreateBuffer(&vertexBufferDesc, &vertexBufferSubresourceInitData, &pVertexBuffer);
+	hr = g_pd3dDevice->CreateBuffer(&vertexBufferDesc, &vertexBufferSubresourceInitData, &pPyramidVertexBuffer);
 	if (FAILED(hr)) {
 		return hr;
 	}
@@ -221,7 +229,7 @@ HRESULT InitGeometry(Vertex* vertexArray, LPCWSTR vertexShaderName, LPCWSTR pixe
 	UINT stride[] = { sizeof(Vertex) };
 	// смещение до первого элемента конкретного вершинного буфера, который будет использован
 	UINT offset[] = { 0 };
-	g_pImmediateContext->IASetVertexBuffers(0, 1, &pVertexBuffer, stride, offset);
+	g_pImmediateContext->IASetVertexBuffers(0, 1, &pPyramidVertexBuffer, stride, offset);
 
 	// указание какие примитивы собирать из вершинного буфера
 	//g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -400,19 +408,19 @@ void ReleaseObjects() {
 	}
 	for(int i = 0; i < PIXEL_SHADERS_NUM; ++i){
 		if(pixelShadersObj[i] != NULL){
-			pixelShadersObj[i]->Realese();
+			pixelShadersObj[i]->Release();
 			pixelShadersObj[i] = NULL;
 		}
 	}
 	for(int i = 0; i < VERTEX_SHADERS_NUM; ++i){
 		if(vertexShadersObj[i] != NULL){
-			vertexShadersObj[i]->Realese();
+			vertexShadersObj[i]->Release();
 			vertexShadersObj[i] = NULL;
 		}
 	}
-	for(int i =  0; i < SHADERS_TOTAL_NUM, ++i){
+	for (int i = 0; i < SHADERS_TOTAL_NUM; ++i) {
 		if(shadersBufferArray[i] != NULL){
-			shadersBufferArray[i]->Realese();
+			shadersBufferArray[i]->Release();
 			shadersBufferArray[i] = NULL;
 		}
 	}
@@ -474,7 +482,7 @@ HRESULT CompileShader(LPCWSTR srcName, LPCSTR entryPoint, LPCSTR target, ID3DBlo
 	}
 	
 	if (errorsBuffer != NULL){
-		errorsBuffer->Realese();
+		errorsBuffer->Release();
 	}
 	return hr;
 };
@@ -578,10 +586,7 @@ inline void InitWallsVertices(Vertex* wallsVertexArray) {
 	vertexBufferSubresourceInitData.SysMemSlicePitch = 0;
 
 	hr = g_pd3dDevice->CreateBuffer(&vertexBufferDesc, &vertexBufferSubresourceInitData, &pWallsVertexBuffer);
-	if (FAILED(hr)) {
-		return hr;
-	}
-
+	
 	UINT stride[] = { sizeof(Vertex) };
 	UINT offset[] = { 0 };
 	g_pImmediateContext->IASetVertexBuffers(1, 1, &pWallsVertexBuffer, stride, offset);
@@ -630,9 +635,6 @@ inline void InitPyramidVertices(Vertex* pyramidVertexArray){
 
 	// создание vertex buffer
 	hr = g_pd3dDevice->CreateBuffer(&vertexBufferDesc, &vertexBufferSubresourceInitData, &pPyramidVertexBuffer);
-	if (FAILED(hr)) {
-		return hr;
-	}
 
 	// привязка vertex buffer к IA stage
 	// колчиство байт конкретного вершинного буфера, которое будет использоваться дальше
@@ -673,16 +675,16 @@ inline void InitShaders(){
 	fileDirBufLength = backslashPos + 1;
 	#endif
 	
-	switch(CheckCompiledShadersFromLogFile(fileDirBuffer, fileDirBufLength, L"\\res\\log.txt", WCHAR_NUM_OF_STRING(L"\\res\\log.txt"))){
+	switch(CheckCompiledShadersFromLogFile(fileDirBuffer, fileDirBufLength, (WCHAR*)L"\\res\\log.txt", WCHAR_NUM_OF_STRING(L"\\res\\log.txt"))){
 		case true:
 		{
-			CreateShadersObjFromCompiledShaders(L"\\res\\compiled_shaders_list.txt", WCHAR_NUM_OF_STRING(L"\\res\\compiled_shaders_list.txt"));
+			CreateShadersObjFromCompiledShaders((WCHAR*)L"\\res\\compiled_shaders_list.txt", WCHAR_NUM_OF_STRING(L"\\res\\compiled_shaders_list.txt"), fileDirBuffer, fileDirBufLength);
 			break;
 		}
 		
 		case false:
 		{
-			CompileAndSaveShadersFromList(L"\\res\\shaders_list.txt", WCHAR_NUM_OF_STRING(L"\\res\\shaders_list.txt"));
+			CompileAndSaveShadersFromList((WCHAR*)L"\\res\\shaders_list.txt", WCHAR_NUM_OF_STRING(L"\\res\\shaders_list.txt"), fileDirBuffer, fileDirBufLength);
 			break;
 		}
 	}
@@ -691,6 +693,8 @@ inline void InitShaders(){
 };
 
 inline HRESULT InitWallsIndexBuffer(WORD* indices){
+	HRESULT hr;
+
 	// описание индекс буфера
 	D3D11_BUFFER_DESC indexBufferDesc;
 	indexBufferDesc.ByteWidth = sizeof(WORD) * 6 * 4;

@@ -4,8 +4,16 @@
 #include "preproc.h"
 #endif
 
+#ifndef _STRUCT_H
+#include "struct.h"
+#endif
+
 #ifndef _PREPROC_FUNC_H
 #include "preproc_func.h"
+#endif
+
+#ifndef _GLOBAL_EXTERN_H
+#include "global_extern.h"
 #endif
 
 void SetProjectionMatrix(MatricesBuffer* pMatricesBuffer, FLOAT angleHoriz, FLOAT angleVert, FLOAT nearZ, FLOAT farZ, BOOL saveProportionsFlag) {
@@ -82,7 +90,7 @@ void SaveProportions(MatricesBuffer* pMatricesBuffer, HWND hWnd) {
 };
 
 inline FLOAT MaxElement(FLOAT arg0, FLOAT arg1) {
-	arg0 >= arg1? return arg0 : return arg1;
+	return arg0 >= arg1 ? arg0 : arg1;
 };
 
 HRESULT InvertMatrix(XMVECTOR zAxis, XMVECTOR yAxis, XMMATRIX* invertibleMatrix) {

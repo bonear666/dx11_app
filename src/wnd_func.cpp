@@ -4,8 +4,16 @@
 #include "preproc.h"
 #endif
 
+#ifndef _STRUCT_H
+#include "struct.h"
+#endif
+
 #ifndef _PREPROC_FUNC_H
 #include "preproc_func.h"
+#endif
+
+#ifndef _GLOBAL_EXTERN_H
+#include "global_extern.h"
 #endif
 
 // функция-обработчик сообщений, поступающих окну
@@ -30,7 +38,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			case(0x57): {// W
 				// можно было бы просто прибавить moveAheadVector к последней строчке view matrix, но эта матрица уже транспонирована, поэтому так сделать не получится 
 				matricesWVP.mView = XMMatrixTranspose(XMMatrixTranslationFromVector(moveAheadVector)) * matricesWVP.mView;
-				//бляяя зачем я решил хранить позицию камеры в xmfloat3, нужно было в xmvector
+				//зачем я решил хранить позицию камеры в xmfloat3, нужно было в xmvector
 				// меняем позицию камеры относительно глобальных координат
 				sseProxyRegister0 = XMLoadFloat3(&currentCameraPos); 
 				sseProxyRegister0 += moveAheadVectorInGlobalCoord;
