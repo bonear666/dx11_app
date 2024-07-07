@@ -10,8 +10,8 @@
 #include "global.h"
 #endif
 
-#ifndef _FUNC_H
-#include "func.h"
+#ifndef _PREPROC_FUNC_H
+#include "preproc_func.h"
 #endif
 
 // Главная функция, точка входа
@@ -31,9 +31,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return hr;
 	}
 
-	// прикрепляем к окну процедуру, которая будет обрабатывать нажатия клавиш и т.д.
-	StartUpWndProcPtr = SetWindowLong(g_hWnd, GWLP_WNDPROC, (LONG)WndProc);
-
 	// массив вершин (пирамида)
 	Vertex* vertexArray = new Vertex[4]{
 		Vertex{XMFLOAT4{-2.0f, -2.0f, 2.0f, 1.0f}, XMFLOAT4{1.0f, 0.0f, 0.0f, 1.0f}}, // a 0
@@ -41,29 +38,46 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Vertex{XMFLOAT4{0.0f, -2.0f, -2.0f, 1.0f}, XMFLOAT4{0.0f, 0.0f, 0.0f, 1.0f}}, //c 2
 		Vertex{XMFLOAT4{0.0f, 4.0f, 0.0f, 1.0f}, XMFLOAT4{1.0f, 0.0f, 1.0f, 1.0f}} //d 3 вершина пирамиды
 	};
-
+	
+	// массив вершин стен
 	Vertex* wallsVertices = new Vertex[8]{
 		Vertex{XMFLOAT4{-50.0f, -2.0f, 50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}}, 
 		Vertex{XMFLOAT4{-50.0f, 6.0f, 50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},
 		Vertex{XMFLOAT4{50.0f, -2.0f, 50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},
 		Vertex{XMFLOAT4{50.0f, 6.0f, 50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},
-		Vertex{XMFLOAT4{-50.0f, -2.0f, -50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},
+		Vertex{XMFLOAT4{-50.0f, -2.0f, -50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},//
 		Vertex{XMFLOAT4{-50.0f, 6.0f, -50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},
 		Vertex{XMFLOAT4{50.0f, -2.0f, -50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},
 		Vertex{XMFLOAT4{50.0f, 6.0f, -50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}}
 	};
+	
+	// определение модели шейдеров
+	SHADERS_MODEL(g_featureLevel)
+	
+	// инициализация шейдеров
+	InitShaders();
+	
+	// указание какие примитивы собирать из вершинного буфера
+	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	
+	// создание буфера вершин, создание ILO 
+	InitPyramidVertices(vertexArray);
+	InitWallsVertices(wallsVertices);
 
 	// создание буфера вершин, компиляция шейдеров, связывание шейдеров и буфера вершин с конвейером
+	/*
 	hr = InitGeometry(vertexArray, L"TriangleVertexShader.hlsl", L"TrianglePixelShader.hlsl", "main", "main");
 	if (FAILED(hr)) {
 		return hr;
-	}
+	}*/
 
 	// освобождение памяти, занятой массивом вершин
 	delete[] vertexArray;
 	vertexArray = NULL;
+	delete[] wallsVertices;
+	wallsVertices = NULL;
 
-	// индексы вершин
+	// индексы вершин пирамиды
 	// обход по часовой стрелеке относительно нормали к поверхности, которую нужно показать
 	WORD indices[] = { 
 		3, 0, 1, //abс видимая грань (обход по часовой стрелке)
@@ -73,9 +87,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	};
 
 	//InvertIndices(indices, 12);
+	
+	WORD wallsIndices[] = { 
+		0, 1, 3,
+		0, 3, 2,
+		4, 7, 5,
+		4, 6, 7,
+		4, 5, 1,
+		4, 1, 0,
+		6, 3, 7,
+		6, 2, 3
+	};
 
-	// Создание константного буфера матриц, константного буфера угла, буфера вершин
+	// Создание константного буфера матриц, константного буфера угла, буфера индексов вершин пирамиды
 	hr = InitMatrices(indices);
+	if (FAILED(hr)) {
+		return hr;
+	}
+	
+	// инициализация буфера индексов вершин стен
+	hr = InitWallsIndexBuffer(wallsIndices);
 	if (FAILED(hr)) {
 		return hr;
 	}
@@ -130,6 +161,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// инициализация хитбоксов
 	InitHitBoxes();
 	
+	// прикрепляем к окну процедуру, которая будет обрабатывать нажатия клавиш и т.д.
+	StartUpWndProcPtr = SetWindowLong(g_hWnd, GWLP_WNDPROC, (LONG)WndProc);
+	
 	MSG msg;// структура, описывающая сообщение
 	ZeroMemory(&msg, sizeof(MSG));
 
@@ -146,8 +180,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (ChangesOfStaticHtBoxesArea) {
 			DefineCurrentStaticHtBoxesArea();
 		}
-		//StaticHitBoxesCollisionDetection();
+		#ifdef _STATIC_HITBOX_COLLISION
+		StaticHitBoxesCollisionDetection();
+		#endif
+		#ifdef _DYNAMIC_HITBOX_COLLISION
 		DynamicHitBoxesCollisionDetection();
+		#endif
 	}
 	// окночание работы приложения
 	ReleaseObjects();

@@ -5,6 +5,7 @@
 HINSTANCE               g_hInst = NULL; //указатель на struct, дескриптор(handle) данного приложения.
 HWND                    g_hWnd = NULL; //указатель на struct, дескриптор(handle) окна данного приложения.
 LONG StartUpWndProcPtr = NULL; // указатель на дефолтную оконную процедуру
+
 D3D_DRIVER_TYPE         g_driverType = D3D_DRIVER_TYPE_NULL; //целочисленная константа. Переменная, обозначающая Тип драйвера, определяет, где производить вычисления.
 D3D_FEATURE_LEVEL       g_featureLevel = D3D_FEATURE_LEVEL_9_1; //используемый feature level, точнее, это переменная, которая будет хранить самый высокий feature level, доступный на заданном адаптере.
 ID3D11Device* g_pd3dDevice = NULL; //указатель на struct(Объект Интерфейса ID3D11Device). ID3D11Device это COM-интерфейс, который создает ресурсы(текстуры, трехмерные объекты и т.д.) для вывода на дисплей.
@@ -12,19 +13,21 @@ ID3D11DeviceContext* g_pImmediateContext = NULL; //указатель на struc
 IDXGISwapChain* g_pSwapChain = NULL; //указатель на struct(Объект Интерфейса IDXGISwapChain). IDXGISwapChain это COM-интерфейс, который хранит в нескольких буферах несколько отрисованых Поверхностей перед их выводом на Дисплей.
 ID3D11RenderTargetView* g_pRenderTargetView = NULL; //указатель на struct(Объект Интерфейса ID3D11RenderTargetView). ID3D11RenderTargetView это COM-интерфейс, который хранит ресурсы back buffer-а. 
 ShaderModelDesc shadersModel; // модель шейдеров
-ID3D11InputLayout* g_pInputLayoutObject = NULL; // указатель на input layout object
+ID3D11InputLayout* g_pInputLayoutObjectPyramid = NULL; // указатель на input layout object вершин пирамиды
+ID3D11InputLayout* g_pInputLayoutObjectWalls = NULL; // указатель на ILO врешин стен
 ID3D11VertexShader* g_pVertexShader = NULL; // указатель на интерфейс vertex shader
 ID3D11PixelShader* g_pPixelShader = NULL; // указатель на интерфейс pixel shader
 ID3D11VertexShader* vertexShadersObj[VERTEX_SHADERS_NUM]; // массив объектов вершинных шейдеров
 ID3D11PixelShader* pixelShadersObj[PIXEL_SHADERS_NUM]; // массив объектов пиксельных шейдеров
 ID3DBlob* VS_Buffer = NULL; // указатель на интерфейс буфера с скомпилированным вершинным шейдером 
 ID3DBlob* PS_Buffer = NULL; // указатель на интерфейс буфера с скомпилированным пиксельным шейдером 
-ID3DBlob** shadersBufferArray = NULL; // массив указатели шейдерных буферов (порядок шейдеров в массиве как в файле со списком шейдеров)
+ID3DBlob** shadersBufferArray = NULL; // массив указатели на скомпилированные шейдеры (порядок шейдеров в массиве как в файле со списком шейдеров)
 ID3D11ShaderReflection*  shaderReflect = NULL; // информация о шейдере
-ID3D11Buffer* pVertexBuffer = NULL; // указатель на буфер вершин пирамиды
+ID3D11Buffer* pPyramidVertexBuffer = NULL; // указатель на буфер вершин пирамиды
 ID3D11Buffer* pWallsVertexBuffer = NULL; // указатель на буфер вершин стен
 ID3D11Buffer* pConstantBuffer = NULL; // констнантный буфер
-ID3D11Buffer* pIndexBuffer = NULL; // буфер индексов
+ID3D11Buffer* pIndexBuffer = NULL; // буфер индексов пирамиды
+ID3D11Buffer* pWallsIndexBuffer = NULL; // буфер индексов пирамиды
 ID3D11Buffer* pAngleBuffer = NULL; // буфер угла 
 ID3D11Buffer* constantBufferArray[] = {NULL, NULL, NULL}; // массив указателей на интерфейсы константных буферов
 AngleConstantBuffer angleCBufferData = { 0.0f, 0.0f, 0.0f, 0.0f }; // угол поворота
@@ -33,6 +36,7 @@ ID3D11Texture2D* depthStencilTexture = NULL; // текстура depth буфе�
 ID3D11DepthStencilView* g_pDepthStencilView = NULL; // ресурсы depth буфера
 ID3D11DepthStencilState* pDSState = NULL; // состояние depth-stencil теста
 ID3D11RasterizerState* pRasterizerState = NULL; // состояние растеризатора 
+
 MatricesBuffer matricesWVP; // матрицы
 XMVECTOR objectsPositions[] = { //массив точек, в которых располагаются объекты
 	XMVECTORF32{-25.0f, 0.0f, 25.0f, 0.0f}, // {-25.0f, 0.0f, 25.0f, 0.0f}
@@ -40,12 +44,13 @@ XMVECTOR objectsPositions[] = { //массив точек, в которых р�
 	XMVECTORF32{0.0f, 0.0f, -25.0f, 0.0f}
 };
 XMMATRIX moveAheadMatrix = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 0.4f)); // матрица движения вперед
-XMVECTOR moveAheadVector = XMVectorSet(0.0f, 0.0f, -0.1f, 0.0f); // вектор движения в положительном направлении оси(в системе координат камеры) 
-XMVECTOR moveAheadVectorInGlobalCoord = XMVECTORF32{ 0.0f, 0.0f, 0.1f, 0.0f }; // вектор движения в положительном направлении оси(в глобальной системе координат)
-XMVECTOR moveBackVector = XMVectorSet(0.0f, 0.0f, 0.1f, 0.0f); // вектор движения в отрицательном направлении оси
-XMVECTOR moveRightVector = XMVectorSet(0.0f, 0.0f, 0.0f, -0.1f); 
-XMVECTOR moveRightVectorInGlobalCoord = XMVECTORF32{ 0.1f, 0.0f, 0.0f, 0.0f }; 
-XMVECTOR moveLeftVector = XMVectorSet(0.0f, 0.0f, 0.0f, 0.1f); 
+XMVECTOR moveAheadVector = CAMERA_MOVEVECTOR_LENGTH * XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f); // вектор движения в положительном направлении оси(в системе координат камеры) 
+XMVECTOR moveAheadVectorInGlobalCoord = CAMERA_MOVEVECTOR_LENGTH * XMVECTORF32{ 0.0f, 0.0f, 1.0f, 0.0f }; // вектор движения в положительном направлении оси(в глобальной системе координат)
+XMVECTOR moveBackVector = CAMERA_MOVEVECTOR_LENGTH * XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f); // вектор движения в отрицательном направлении оси
+XMVECTOR moveRightVector = CAMERA_MOVEVECTOR_LENGTH * XMVectorSet(0.0f, 0.0f, 0.0f, -1.0f); 
+XMVECTOR moveRightVectorInGlobalCoord = CAMERA_MOVEVECTOR_LENGTH * XMVECTORF32{1.0f, 0.0f, 0.0f, 0.0f }; 
+XMVECTOR moveLeftVector = CAMERA_MOVEVECTOR_LENGTH * XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+ 
 DWORD pageSize; // размер страницы виртуальной памяти
 DWORD allocationGranularity; // выравнивание адресов в виртуальной памяти
 WCHAR* shadersListBuf = NULL;
