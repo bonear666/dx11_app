@@ -58,6 +58,9 @@ CloseHandle(FILE_HANDLE);
 #define WCHAR_NUM_OF_STRING(STRING) \
 sizeof(STRING) / sizeof(WCHAR)
 
+#define CONVERT_COLOR_CODE(FLOAT_COLOR) \
+FLOAT_COLOR * (1.0f / 255.0f)
+
 // параметры res файлов
 #define SHADERS_LIST_CHAR_NUM 55 // with BOM кол-во символов в списке шейдеров
 #define COMPILED_SHADERS_LIST_CHAR_NUM 52 // with BOM кол-во символов в списке шейдеров
@@ -68,4 +71,4 @@ sizeof(STRING) / sizeof(WCHAR)
 #define LOG_FILE_COMPILED_SHADERS_FLAG_POS 1
 
 // прочие параметры
-#define SHADERS_CONST_BUFFERS_NUM 2											
+#define SHADERS_CONST_BUFFERS_NUM 2

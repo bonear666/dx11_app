@@ -37,6 +37,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// Переменная для хранения кода, возвращаемого вызванным методом интерфейса
 	HRESULT hr;
 
+	// изменение рабочей директории
+	SetCurrentDirectoryToModulePath();
+
 	// СОЗДАНИЕ ОКНА
 	hr = MyCreateWindow(L"DX11GraphicApp", L"GraphicApp", 1280, 720, hInstance, nShowCmd);
 	if (FAILED(hr)) {
@@ -65,14 +68,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	
 	// массив вершин стен
 	Vertex* wallsVertices = new Vertex[8]{
-		Vertex{XMFLOAT4{-50.0f, -2.0f, 50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}}, 
-		Vertex{XMFLOAT4{-50.0f, 6.0f, 50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},
-		Vertex{XMFLOAT4{50.0f, -2.0f, 50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},
-		Vertex{XMFLOAT4{50.0f, 6.0f, 50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},
-		Vertex{XMFLOAT4{-50.0f, -2.0f, -50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},//
-		Vertex{XMFLOAT4{-50.0f, 6.0f, -50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},
-		Vertex{XMFLOAT4{50.0f, -2.0f, -50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}},
-		Vertex{XMFLOAT4{50.0f, 6.0f, -50.0f, 1.0f}, XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f}}
+		Vertex{XMFLOAT4{-50.0f, -2.0f, 50.0f, 1.0f}, XMFLOAT4{CONVERT_COLOR_CODE(0.0f), CONVERT_COLOR_CODE(50.0f), CONVERT_COLOR_CODE(90.0f), 1.0f}},
+		Vertex{XMFLOAT4{-50.0f, 6.0f, 50.0f, 1.0f}, XMFLOAT4{CONVERT_COLOR_CODE(0.0f), CONVERT_COLOR_CODE(255.0f), CONVERT_COLOR_CODE(160.0f), 1.0f}},
+		Vertex{XMFLOAT4{50.0f, -2.0f, 50.0f, 1.0f}, XMFLOAT4{CONVERT_COLOR_CODE(160.0f), CONVERT_COLOR_CODE(190.0f), CONVERT_COLOR_CODE(80.0f), 1.0f}},
+		Vertex{XMFLOAT4{50.0f, 6.0f, 50.0f, 1.0f}, XMFLOAT4{CONVERT_COLOR_CODE(0.0f), CONVERT_COLOR_CODE(255.0f), CONVERT_COLOR_CODE(160.0f), 1.0f}},
+		Vertex{XMFLOAT4{-50.0f, -2.0f, -50.0f, 1.0f}, XMFLOAT4{CONVERT_COLOR_CODE(160.0f), CONVERT_COLOR_CODE(190.0f), CONVERT_COLOR_CODE(80.0f), 1.0f}},
+		Vertex{XMFLOAT4{-50.0f, 6.0f, -50.0f, 1.0f}, XMFLOAT4{CONVERT_COLOR_CODE(0.0f), CONVERT_COLOR_CODE(255.0f), CONVERT_COLOR_CODE(160.0f), 1.0f}},
+		Vertex{XMFLOAT4{50.0f, -2.0f, -50.0f, 1.0f}, XMFLOAT4{CONVERT_COLOR_CODE(0.0f), CONVERT_COLOR_CODE(150.0f), CONVERT_COLOR_CODE(90.0f), 1.0f}},
+		Vertex{XMFLOAT4{50.0f, 6.0f, -50.0f, 1.0f}, XMFLOAT4{CONVERT_COLOR_CODE(0.0f), CONVERT_COLOR_CODE(255.0f), CONVERT_COLOR_CODE(160.0f), 1.0f}}
 	};
 	
 	// определение модели шейдеров
@@ -120,7 +123,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		4, 5, 1,
 		4, 1, 0,
 		6, 3, 7,
-		6, 2, 3
+		6, 2, 3,
+		0, 2, 4, // земля
+		2, 6, 4
 	};
 	//InvertIndices(wallsIndices, 6 * 4);
 

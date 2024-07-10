@@ -228,3 +228,20 @@ HRESULT MyCreateWindow(CONST WCHAR* wndClassNameParam, CONST WCHAR* wndNameParam
 
 	return S_OK;
 };
+
+void SetCurrentDirectoryToModulePath() {
+	// буфер хранения строки пути файла
+	WCHAR* fileDirBuffer = new WCHAR[MAX_PATH];
+	// длина пути файла с учетом null(все длины строк с учетом null), без учета имени искомого файла
+	DWORD fileDirBufLength = GetModuleFileName(NULL, fileDirBuffer, MAX_PATH) + 1;
+	size_t backslashPos = FindBackslashInPath(fileDirBuffer, fileDirBufLength);
+	fileDirBuffer[backslashPos] = NULL;
+	fileDirBufLength = backslashPos + 1;
+#ifdef _DEBUG
+	backslashPos = FindBackslashInPath(fileDirBuffer, fileDirBufLength);
+	fileDirBuffer[backslashPos] = NULL;
+	fileDirBufLength = backslashPos + 1;
+#endif
+	SetCurrentDirectory(fileDirBuffer);
+	delete[] fileDirBuffer;
+};

@@ -123,22 +123,9 @@ inline void InitPyramidVertices(Vertex* pyramidVertexArray) {
 inline void InitShaders();
 inline void InitShaders() {
 	// буфер хранения строки пути файла
-	//WCHAR* fileDirBuffer = new WCHAR[MAX_PATH];
-	// длина пути файла с учетом null(все длины строк с учетом null), без учета имени искомого файла
-	//DWORD fileDirBufLength = GetCurrentDirectory(MAX_PATH, fileDirBuffer) + 1;
-
-	// буфер хранения строки пути файла
 	WCHAR* fileDirBuffer = new WCHAR[MAX_PATH];
 	// длина пути файла с учетом null(все длины строк с учетом null), без учета имени искомого файла
-	DWORD fileDirBufLength = GetModuleFileName(NULL, fileDirBuffer, MAX_PATH) + 1;
-	size_t backslashPos = FindBackslashInPath(fileDirBuffer, fileDirBufLength);
-	fileDirBuffer[backslashPos] = NULL;
-	fileDirBufLength = backslashPos + 1;
-#ifdef _DEBUG
-	backslashPos = FindBackslashInPath(fileDirBuffer, fileDirBufLength);
-	fileDirBuffer[backslashPos] = NULL;
-	fileDirBufLength = backslashPos + 1;
-#endif
+	DWORD fileDirBufLength = GetCurrentDirectory(MAX_PATH, fileDirBuffer) + 1;
 
 	switch (CheckCompiledShadersFromLogFile(fileDirBuffer, fileDirBufLength, (WCHAR*)L"\\res\\log.txt", WCHAR_NUM_OF_STRING(L"\\res\\log.txt"))) {
 	case true:
@@ -163,7 +150,7 @@ inline HRESULT InitWallsIndexBuffer(WORD* indices) {
 
 	// описание индекс буфера
 	D3D11_BUFFER_DESC indexBufferDesc;
-	indexBufferDesc.ByteWidth = sizeof(WORD) * 6 * 4;
+	indexBufferDesc.ByteWidth = sizeof(WORD) * 6 * 5;
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufferDesc.CPUAccessFlags = 0;

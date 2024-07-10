@@ -379,7 +379,7 @@ void DrawScene(XMVECTOR* objectsPositionsArray) {
 	// привязка индекс-буфера
 	g_pImmediateContext->IASetIndexBuffer(pWallsIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	// отрисовка
-	g_pImmediateContext->DrawIndexed(6 * 4, 0, 0);
+	g_pImmediateContext->DrawIndexed(6 * 5, 0, 0);
 
 	// Вывод на дисплей поверхности Back Buffer
 	g_pSwapChain->Present(0, 0);
