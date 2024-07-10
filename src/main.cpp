@@ -1,3 +1,5 @@
+#define _MAIN_CPP
+
 #ifndef _PREPROC_H
 #include "preproc.h"
 #endif
@@ -10,8 +12,24 @@
 #include "global.h"
 #endif
 
-#ifndef _PREPROC_FUNC_H
-#include "preproc_func.h"
+#ifndef _DIRECTX_FUNC_H
+#include "directx_func.h"
+#endif
+
+#ifndef _HITBOX_FUNC_H
+#include "hitbox_func.h"
+#endif
+
+#ifndef _MATH_FUNC_H
+#include "math_func.h"
+#endif
+
+#ifndef _SHADERFILES_FUNC_H
+#include "shaderfiles_func.h"
+#endif
+
+#ifndef _WND_FUNC_H
+#include "wnd_func.h"
 #endif
 
 // Главная функция, точка входа
@@ -24,6 +42,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (FAILED(hr)) {
 		return hr;
 	}
+
+	// инициализация массива неподвижных хитбоксов
+	InitPageSizeAndAllocGranularityVariables();
+
+	// инициализация хитбоксов
+	InitHitBoxes();
 
 	//ИНИЦИАЛИЗАЦИЯ DirectX КОМПОНЕНТОВ	
 	hr = CreateDirect3DComponents(1280, 720);
@@ -98,6 +122,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		6, 3, 7,
 		6, 2, 3
 	};
+	//InvertIndices(wallsIndices, 6 * 4);
 
 	// Создание константного буфера матриц, константного буфера угла, буфера индексов вершин пирамиды
 	hr = InitMatrices(indices);
@@ -156,10 +181,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//SetProjectionMatrixWithCameraDistance(&matricesWVP, XM_PI / 5.0f, XM_PI / 25.0f, 0.5f, 2.2f, 0.0001f, true);
 
 	// инициализация массива неподвижных хитбоксов
-	InitPageSizeAndAllocGranularityVariables();
+	//InitPageSizeAndAllocGranularityVariables();
 	
 	// инициализация хитбоксов
-	InitHitBoxes();
+	//InitHitBoxes();
 	
 	// прикрепляем к окну процедуру, которая будет обрабатывать нажатия клавиш и т.д.
 	StartUpWndProcPtr = SetWindowLong(g_hWnd, GWLP_WNDPROC, (LONG)WndProc);

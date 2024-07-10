@@ -6,6 +6,14 @@ cbuffer MatrixesConstantBuffer : register(b0)
     float4x4 rotationAroundAxis;
 };
 
+cbuffer angleConstantBuffer : register(b1)
+{
+    float angle;
+    float angle1;
+    float angle2;
+    float angle3;
+};
+
 struct VS_OUTPUT
 {
     float4 outPos : SV_POSITION;

@@ -4,7 +4,8 @@
 #pragma comment(lib, "d3d11")
 #pragma comment(lib, "d3d10_1")
 #pragma comment(lib, "d3d10")
-#pragma comment(lib,"d3dcompiler")
+#pragma comment(lib, "d3dcompiler")
+#pragma comment(lib, "dxguid")
 
 #include <windows.h>
 #include <D3D11.h>
@@ -12,11 +13,12 @@
 #include <DXGI.h>
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
+#include <d3d11shader.h>
 #include <iostream>
 #include <cmath>
 #include <hidusage.h>
 
-#define _STATIC_HITBOX_COLLISION // включает столкновения с хитбоксами
+//#define _STATIC_HITBOX_COLLISION // включает столкновения с хитбоксами
 #define _DYNAMIC_HITBOX_COLLISION // включает столкновения с хитбоксами
 #define _DEBUG
 
@@ -37,7 +39,7 @@
 #define DYNAMIC_HIT_BOX_AMOUNT 3
 
 // изменяемые параметры
-#define ROTATION_ANGLE 0.00007f // угол поворота пирамид
+#define ROTATION_ANGLE 0.0005f // угол поворота пирамид
 #define W_COORD 0.01f
 #define CAMERA_MOVEVECTOR_LENGTH 0.1f
 #define DYNAMIC_HIT_BOX_MOVEVECTOR_LENGTH 0.001f

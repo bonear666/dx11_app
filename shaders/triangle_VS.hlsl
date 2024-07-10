@@ -28,7 +28,7 @@ VS_OUTPUT main(float4 pos : POSITION, float4 color : COLOR)
    // newPos.y = pos.y;
    // newPos.z = 5 + pos.x * sin(angle) + (pos.z - 5) * cos(angle);
     //newPos.w = pos.w;
-
+    newPos = mul(newPos, rotationAroundAxis);
     newPos = mul(newPos, world);
     newPos = mul(newPos, view);
     //newPos = mul(newPos, rotationAroundAxis);

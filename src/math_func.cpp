@@ -8,12 +8,28 @@
 #include "struct.h"
 #endif
 
-#ifndef _PREPROC_FUNC_H
-#include "preproc_func.h"
-#endif
-
 #ifndef _GLOBAL_EXTERN_H
 #include "global_extern.h"
+#endif
+
+#ifndef _DIRECTX_FUNC_H
+#include "directx_func.h"
+#endif
+
+#ifndef _HITBOX_FUNC_H
+#include "hitbox_func.h"
+#endif
+
+#ifndef _MATH_FUNC_H
+#include "math_func.h"
+#endif
+
+#ifndef _SHADERFILES_FUNC_H
+#include "shaderfiles_func.h"
+#endif
+
+#ifndef _WND_FUNC_H
+#include "wnd_func.h"
 #endif
 
 void SetProjectionMatrix(MatricesBuffer* pMatricesBuffer, FLOAT angleHoriz, FLOAT angleVert, FLOAT nearZ, FLOAT farZ, BOOL saveProportionsFlag) {
@@ -88,10 +104,10 @@ void SaveProportions(MatricesBuffer* pMatricesBuffer, HWND hWnd) {
 	pMatricesBuffer->mProjection = XMMatrixTranspose(pMatricesBuffer->mProjection);
 	g_pImmediateContext->UpdateSubresource(constantBufferArray[0], 0, 0, pMatricesBuffer, 0, 0);
 };
-
+/*
 inline FLOAT MaxElement(FLOAT arg0, FLOAT arg1) {
 	return arg0 >= arg1 ? arg0 : arg1;
-};
+};*/
 
 HRESULT InvertMatrix(XMVECTOR zAxis, XMVECTOR yAxis, XMMATRIX* invertibleMatrix) {
 	// проверка векторов на ортогональность 
@@ -190,7 +206,7 @@ HRESULT NewCoordinateSystemMatrix(XMVECTOR point, XMVECTOR zAxis, XMVECTOR yAxis
 void SetWorldMatrix(XMVECTOR point, XMVECTOR scale, XMMATRIX* worldMatrix) {
 	*worldMatrix = XMMatrixTranspose(XMMatrixScalingFromVector(scale) * XMMatrixTranslationFromVector(point));
 };
-
+/*
 inline void InvertIndices(WORD* indicesArray, int size) {
 	WORD triangleEnd;
 
@@ -200,7 +216,7 @@ inline void InvertIndices(WORD* indicesArray, int size) {
 		indicesArray[i] = indicesArray[i-2];
 		indicesArray[i - 2] = triangleEnd;
 	}
-};
+};*/
 
 XMVECTOR FindOrthogonalVector(XMVECTOR vector) { // скалярное произведение ортогональных векторов равно нулю, на использовании этого факта и строится поиск ортогонального вектора
 	XMFLOAT4 orthogonalVector;

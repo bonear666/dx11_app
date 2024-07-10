@@ -71,13 +71,13 @@ extern XMFLOAT3 previousCameraPos; // позиция камеры на пред�
 // первая матрица - смещаем центр координат в центр хибокса
 // вторая матрица - поворачиваем точку и хитбокс так, чтобы ширина хитбокса была || оси X , а длинна хитбокса || оси Z
 // третья матрица - смещаем центр координат в левый нижний угол хитбокса
-extern const XMMATRIX staticHitBoxesRotationMatricesArray[]; 
+extern const XMMATRIX staticHitBoxesRotationMatricesArray[4]; 
 // массив обратных матриц к матрицам из staticHitBoxesRotationMatricesArray
-extern const XMMATRIX invertStaticHitBoxesRotationMatricesArray[];
+extern const XMMATRIX invertStaticHitBoxesRotationMatricesArray[4];
 // массив динамических хитбоксов
 extern DynamicHitBox* DynamicHitBoxesArray;
 // массив векторов движения динамических хитбоксов
-extern XMVECTOR DynamicHitBoxesMoveVectorsArray[];
+extern XMVECTOR DynamicHitBoxesMoveVectorsArray[3];
 // переменная, куда кладем произвольные переменные типа XMFLOAT4
 extern XMVECTOR sseProxyRegister0;
 extern XMVECTOR sseProxyRegister1;

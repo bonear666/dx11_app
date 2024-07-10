@@ -8,14 +8,30 @@
 #include "struct.h"
 #endif
 
-#ifndef _PREPROC_FUNC_H
-#include "preproc_func.h"
-#endif
-
 #ifndef _GLOBAL_EXTERN_H
 #include "global_extern.h"
 #endif
 
+#ifndef _DIRECTX_FUNC_H
+#include "directx_func.h"
+#endif
+
+#ifndef _HITBOX_FUNC_H
+#include "hitbox_func.h"
+#endif
+
+#ifndef _MATH_FUNC_H
+#include "math_func.h"
+#endif
+
+#ifndef _SHADERFILES_FUNC_H
+#include "shaderfiles_func.h"
+#endif
+
+#ifndef _WND_FUNC_H
+#include "wnd_func.h"
+#endif
+/*
 inline void CompileAndSaveShadersFromList(WCHAR* shadersListDir, size_t shadersListDirLength, WCHAR* fileDirBuffer, size_t fileDirBufLength){
 	HRESULT hr;
 	HANDLE searchHandle;
@@ -89,8 +105,8 @@ inline void CompileAndSaveShadersFromList(WCHAR* shadersListDir, size_t shadersL
 		fileDirBuffer[fileDirBufLength - 1] = NULL;
 		shaderNum++;	
 	}
-};
-
+};*/
+/*
 inline bool CheckCompiledShadersFromLogFile(WCHAR* exeFileDir, size_t exeFileDirLength, WCHAR* logFileDir, size_t logFileDirLength){
 	wmemcpy(&exeFileDir[exeFileDirLength - 1], &logFileDir[0], logFileDirLength);
 	WCHAR flagsBuf[1 + LOG_FILE_FLAGS_NUM];
@@ -113,8 +129,8 @@ inline bool CheckCompiledShadersFromLogFile(WCHAR* exeFileDir, size_t exeFileDir
 		CloseHandle(logFileHandle);
 		return false;
 	}
-};
-
+};*/
+/*
 inline void CreateShadersObjFromCompiledShaders(WCHAR* shadersListDir, size_t shadersListDirLength, WCHAR* fileDirBuffer, size_t fileDirBufLength){
 	// найти cso файлы в текущей директории
 	
@@ -183,7 +199,7 @@ inline void CreateShadersObjFromCompiledShaders(WCHAR* shadersListDir, size_t sh
 		fileDirBuffer[fileDirBufLength - 1] = NULL;
 		shaderNum++;	
 	}
-};
+};*/
 
 HRESULT FindFilesInCurrentDir(WCHAR* fileDirBuffer, size_t fileDirBufLength, WCHAR* fileName, size_t fileNameLength, WIN32_FIND_DATA* fileDataPtr){
 	// создается полный путь до файла
@@ -209,27 +225,32 @@ HRESULT FindFilesInCurrentDir(WCHAR* fileDirBuffer, size_t fileDirBufLength, WCH
 		if (searchHandle != INVALID_HANDLE_VALUE) {
 		do {
 			// если найденый файл - каталог
-			if(fileDataPtr->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+			if((fileDataPtr->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY) {
 				// изменение текущей директории
 				size_t folderNameLength = FileNameLength(fileDataPtr->cFileName);
-				wmemcpy(&fileDirBuffer[fileDirBufLength - 2], (const wchar_t*)fileDataPtr->cFileName[0], folderNameLength);
-				
-				// если в следующей директории нашелся файл
-				if (FindFilesInCurrentDir(fileDirBuffer, fileDirBufLength + folderNameLength - 2, fileName, fileNameLength, fileDataPtr) == S_OK){
-					FindClose(searchHandle);
-					return S_OK;
+				// проверка не является ли каталог "." или ".."
+				if ((folderNameLength <= 3) &&
+					(((*(unsigned int*)fileDataPtr->cFileName ^ 0x002E002E) || (fileDataPtr->cFileName[2] ^ 0x0000)) || // является ли директория ".."
+					(*(unsigned int*)fileDataPtr->cFileName ^ 0x0000002E)) // является ли директория "."
+					) {
+				}
+				else {
+					wmemcpy(&fileDirBuffer[fileDirBufLength - 2], (const wchar_t*)&fileDataPtr->cFileName[0], folderNameLength);
+					// если в следующей директории нашелся файл
+					if (FindFilesInCurrentDir(fileDirBuffer, fileDirBufLength + folderNameLength - 2, fileName, fileNameLength, fileDataPtr) == S_OK) {
+						FindClose(searchHandle);
+						return S_OK;
+					}
 				}
 			}	
 		} while (FindNextFile(searchHandle, fileDataPtr) != 0);
 		}
 		// если директория пуста или все каталоги в директории проверены	
-		else{
-			FindClose(searchHandle);
-			return E_FAIL;
-		}
+		FindClose(searchHandle);
+		return E_FAIL;
 	}
 };
-
+/*
 inline size_t FileNameLength(WCHAR* name){
 	size_t nameLength = 0;
 	while(name[nameLength] != NULL){
@@ -238,11 +259,11 @@ inline size_t FileNameLength(WCHAR* name){
 	nameLength++;
 	
 	return nameLength;
-};
-
+};*/
+/*
 inline size_t FindBackslashInPath(WCHAR* dir, size_t length){
 	while(dir[length - 1] != L'\\'){
 		length--;
 	}
 	return length;
-};
+};*/

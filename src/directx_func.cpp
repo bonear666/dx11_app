@@ -8,14 +8,29 @@
 #include "struct.h"
 #endif
 
-#ifndef _PREPROC_FUNC_H
-#include "preproc_func.h"
-#endif
-
 #ifndef _GLOBAL_EXTERN_H
 #include "global_extern.h"
 #endif
 
+#ifndef _DIRECTX_FUNC_H
+#include "directx_func.h"
+#endif
+
+#ifndef _HITBOX_FUNC_H
+#include "hitbox_func.h"
+#endif
+
+#ifndef _MATH_FUNC_H
+#include "math_func.h"
+#endif
+
+#ifndef _SHADERFILES_FUNC_H
+#include "shaderfiles_func.h"
+#endif
+
+#ifndef _WND_FUNC_H
+#include "wnd_func.h"
+#endif
 
 HRESULT CreateDirect3DComponents(UINT widthParam, UINT heightParam) {
 	HRESULT hr;
@@ -568,7 +583,7 @@ HRESULT InitMatrices(WORD* indices) {
 
 	return S_OK;
 };
-
+/*
 inline void InitWallsVertices(Vertex* wallsVertexArray) {
 	HRESULT hr;
 
@@ -718,6 +733,7 @@ inline HRESULT InitWallsIndexBuffer(WORD* indices){
 
 	return S_OK;
 };
+*/
 
 
 

@@ -1,5 +1,21 @@
 #define _DIRECTX_FUNC_H
 
+#ifndef _PREPROC_H
+#include "preproc.h"
+#endif
+
+#ifndef _STRUCT_H
+#include "struct.h"
+#endif
+
+#if !defined(_GLOBAL_EXTERN_H) && !defined(_MAIN_CPP)
+#include "global_extern.h"
+#endif
+
+#ifndef _SHADERFILES_FUNC_H
+#include "shaderfiles_func.h"
+#endif
+
 // Создание DirectX компонентов
 HRESULT CreateDirect3DComponents(UINT widthParam, UINT heightParam);
 // Создание буфера вершин, компиляция шейдеров, связывание шейдеров с конвейером
@@ -49,7 +65,7 @@ inline void InitWallsVertices(Vertex* wallsVertexArray) {
 	UINT numInputLayoutObject = sizeof(layout) / sizeof(D3D11_INPUT_ELEMENT_DESC);
 
 	// Создание Input-Layout Object
-	hr = g_pd3dDevice->CreateInputLayout(layout, numInputLayoutObject, shadersBufferArray[1]->GetBufferPointer(), shadersBufferArray[1]->GetBufferSize(), &g_pInputLayoutObjectWalls);
+	hr = g_pd3dDevice->CreateInputLayout(layout, numInputLayoutObject, shadersBufferArray[2]->GetBufferPointer(), shadersBufferArray[2]->GetBufferSize(), &g_pInputLayoutObjectWalls);
 
 };
 // инициализация буфера вершин пирамиды

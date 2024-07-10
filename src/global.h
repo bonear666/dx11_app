@@ -75,7 +75,7 @@ XMFLOAT3 previousCameraPos; // позиция камеры на предыдущ
 // первая матрица - смещаем центр координат в центр хибокса
 // вторая матрица - поворачиваем точку и хитбокс так, чтобы ширина хитбокса была || оси X , а длинна хитбокса || оси Z
 // третья матрица - смещаем центр координат в левый нижний угол хитбокса
-const XMMATRIX staticHitBoxesRotationMatricesArray[4] = { // аргументы первой функции - отрицательное значение позиции хитбокса
+extern const XMMATRIX staticHitBoxesRotationMatricesArray[4] = { // аргументы первой функции - отрицательное значение позиции хитбокса
 	// аргументы второй функции - отрицательное значение угла поворота хитбокса, относительно системы координат, проходящей через центр хитбокса
 	XMMatrixTranslation(0.0f, 0.0f, -55.0f) * XMMatrixRotationY(0.0f) * XMMatrixTranslation(50.0f, 0.0f, 2.5f), // матрица поворота для 0 хитбокса
 	XMMatrixTranslation(-55.0f, 0.0f, 0.0f) * XMMatrixRotationY(0.0f) * XMMatrixTranslation(2.5f, 0.0f, 50.0f), // матрица поворота для 1 хитбокса
@@ -88,7 +88,7 @@ const XMMATRIX staticHitBoxesRotationMatricesArray[4] = { // аргументы 
 	//XMVECTORF32{0.0f, 0.0f, 0.0f, 0.0f}}
 }; 
 // массив обратных матриц к матрицам из staticHitBoxesRotationMatricesArray
-const XMMATRIX invertStaticHitBoxesRotationMatricesArray[4] = {
+extern const XMMATRIX invertStaticHitBoxesRotationMatricesArray[4] = {
 	XMMatrixTranslation(-50.0f, 0.0f, - 2.5f) * XMMatrixRotationY(0.0f) * XMMatrixTranslation(0.0f, 0.0f, 55.0f), // матрица поворота для 0 хитбокса
 	XMMatrixTranslation(-2.5f, 0.0f, -50.0f)* XMMatrixRotationY(0.0f)* XMMatrixTranslation(55.0f, 0.0f, 0.0f), // матрица поворота для 1 хитбокса
 	XMMatrixTranslation(-50.0f, 0.0f, -2.5f)* XMMatrixRotationY(0.0f)* XMMatrixTranslation(0.0f, 0.0f, -55.0f), // матрица поворота для 2 хитбокса
